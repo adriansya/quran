@@ -41,6 +41,10 @@ def bw2ar(s):
     return "".join(BW.get(c, c) for c in s)
 
 
+# kelas kata tradisional: fi'il (f), isim (i), harf (h)
+ISIM = {"N", "PN", "ADJ", "PRON", "DEM", "REL", "T", "LOC", "IMPN"}
+KELAS = lambda pos: "f" if pos == "V" else "i" if pos in ISIM else "h"  # noqa: E731
+
 POS_ID = {
     "N": "Kata benda", "V": "Kata kerja", "PN": "Nama diri", "ADJ": "Kata sifat",
     "PRON": "Kata ganti", "DEM": "Kata tunjuk", "REL": "Kata ganti relatif",
@@ -88,6 +92,7 @@ def main():
     lemmas = {}  # bw -> info
     occ = collections.defaultdict(list)
     surah_out = {}
+    mushaf = {}  # surah -> halaman & juz per ayat
 
     for ch in chapters:
         n = ch["id"]
@@ -120,6 +125,7 @@ def main():
             tr = TAG_RE.sub("", v["translations"][0]["text"]).strip()
             vs.append({"n": v["verse_number"], "w": ws, "t": tr})
         surah_out[n] = vs
+        mushaf[n] = {"p": [v["page_number"] for v in verses], "j": [v["juz_number"] for v in verses]}
 
     # urutkan lemma berdasarkan frekuensi -> id numerik
     order = sorted(lemmas, key=lambda k: (-len(occ[k]), k))
@@ -150,6 +156,7 @@ def main():
             "pos": pos,
             "posId": POS_ID.get(pos, "Partikel"),
             "vform": L["vform"].most_common(1)[0][0] if L["vform"] else None,
+            "k": KELAS(pos),
             "n": len(occ[k]),
             "mean": means,
             "form": top_form,
@@ -168,6 +175,7 @@ def main():
     dump("lemmas.json", lemma_list)
     dump("roots.json", root_list)
     dump("occ.json", [occ[k] for k in order])
+    dump("mushaf.json", mushaf)
     dump("chapters.json", [{
         "n": c["id"], "ar": c["name_arabic"], "name": c["name_simple"],
         "arti": c["translated_name"]["name"], "ayat": c["verses_count"], "place": c["revelation_place"],

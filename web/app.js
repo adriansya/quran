@@ -19,22 +19,14 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem("kq." + k); return v ? JSON.parse(v) : d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem("kq." + k, JSON.stringify(v)); } catch { /* mode privat */ } },
 };
-let SRS = store.get("srs", {}); // id -> {iv: hari, due: ms, reps}
-const settings = Object.assign({ newPerDay: 10, contentOnly: false, showT: true, showM: true }, store.get("settings", {}));
-const saveSRS = () => store.set("srs", SRS);
+import * as S from "./srs.js";
+import { initStudy, pageStudy, pageStats, leaveStudy, coverage } from "./study.js";
+S.load();
+const settings = Object.assign({ showT: true, showM: true }, store.get("settings", {}));
 const saveSettings = () => store.set("settings", settings);
-const DAY = 864e5;
-const level = (id) => { const s = SRS[id]; if (!s) return 0; return s.iv >= 21 ? 3 : s.iv >= 4 ? 2 : 1; };
-function coverage() {
-  let learned = 0, mastered = 0, nl = 0, nm = 0;
-  for (const id in SRS) {
-    const L = LEMMAS[id], lv = level(id);
-    if (!L || !lv) continue;
-    learned += L.n; nl++;
-    if (lv >= 2) { mastered += L.n; nm++; }
-  }
-  return { learned, mastered, nl, nm };
-}
+const level = S.level;
+const mushaf = () => getJSON("data/mushaf.json");
+let PAGE_LABEL = {};
 
 // ---------- util ----------
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -42,7 +34,6 @@ const pct = (x) => (x * 100).toFixed(1).replace(".", ",") + "%";
 const fmt = (n) => n.toLocaleString("id-ID");
 const stripAr = (s) => s.replace(/[ً-ٰٟۖ-ۭـ]/g, "").replace(/[ٱأإآ]/g, "ا").replace(/ى/g, "ي");
 const rootSpaced = (r) => (r ? [...r].join(" ") : "—");
-const CONTENT_POS = new Set(["N", "V", "ADJ", "PN"]);
 const audioUrl = (loc) => { const [s, a, w] = loc.split(":"); return `${AUDIO}${s.padStart(3, "0")}_${a.padStart(3, "0")}_${w.padStart(3, "0")}.mp3`; };
 const play = (loc) => { new Audio(audioUrl(loc)).play().catch(() => {}); };
 const chapterName = (n) => CHAPTERS[n - 1]?.name ?? n;
@@ -75,7 +66,7 @@ function curveSVG() {
 
 function pageHome() {
   const c = coverage();
-  const due = Object.values(SRS).filter((s) => s.due <= Date.now()).length;
+  const due = Object.values(S.st.cards).filter((s) => s.due <= Date.now()).length, sk = S.streak();
   $app.innerHTML = `
   <section class="hero">
     <div>
@@ -84,6 +75,7 @@ function pageHome() {
       Pelajari dari yang paling sering muncul, lengkap dengan akar kata dan contoh ayat beserta terjemah Kemenag.</p>
       <div class="row"><a class="btn primary" href="#/latihan">Mulai latihan${due ? ` · ${due} perlu diulang` : ""}</a>
       <a class="btn" href="#/kosakata">Jelajahi kosakata</a></div>
+      ${sk ? `<p class="small muted">🔥 ${sk} hari beruntun · <a href="#/statistik">lihat statistik</a></p>` : ""}
     </div>
     <div class="card">${curveSVG()}</div>
   </section>
@@ -91,7 +83,7 @@ function pageHome() {
   <div class="card">
     <div class="row" style="justify-content:space-between"><b>Cakupan kata yang sudah dipelajari</b><b>${pct(c.learned / TOTAL_WORDS)}</b></div>
     <div class="coverage-bar"><div style="width:${(c.learned / TOTAL_WORDS) * 100}%"></div></div>
-    <div class="muted small">${fmt(c.nl)} lemma dipelajari · ${fmt(c.nm)} lemma sudah mantap (${pct(c.mastered / TOTAL_WORDS)} kata Al-Qur'an)</div>
+    <div class="muted small">${fmt(c.nl)} kata dasar lulus · ${fmt(c.lrn)} sedang dipelajari · ${fmt(c.nm)} dikuasai (${pct(c.mastered / TOTAL_WORDS)} kata Al-Qur'an)</div>
   </div>
   <div class="grid stats" style="margin-top:12px">
     <div class="card stat"><div class="v">${fmt(TOTAL_WORDS)}</div><div class="k">kata dalam Al-Qur'an</div></div>
@@ -106,13 +98,13 @@ function pageHome() {
 function pageVocab(q) {
   const state = { q: q.get("q") || "", pos: q.get("pos") || "", st: q.get("st") || "", limit: 100 };
   $app.innerHTML = `<h1>Kosakata</h1>
-  <p class="muted">${fmt(LEMMAS.length)} lemma, diurutkan dari yang paling sering muncul.</p>
+  <p class="muted">${fmt(LEMMAS.length)} kata dasar (lemma), diurutkan dari yang paling sering muncul. Lihat juga <a href="#/akar">daftar akar kata</a>.</p>
   <div class="toolbar">
     <input id="q" type="search" placeholder="Cari arti, latin, atau Arab…" value="${esc(state.q)}" autocomplete="off">
     <select id="pos"><option value="">Semua jenis</option>
       <option value="N">Kata benda</option><option value="V">Kata kerja</option><option value="ADJ">Kata sifat</option>
       <option value="PN">Nama diri</option><option value="PRON">Kata ganti</option><option value="P">Preposisi</option><option value="X">Partikel lain</option></select>
-    <select id="st"><option value="">Semua status</option><option value="0">Belum dipelajari</option><option value="1">Sedang dipelajari</option><option value="2">Sudah mantap</option></select>
+    <select id="st"><option value="">Semua status</option><option value="0">Belum dipelajari</option><option value="1">Sedang dipelajari</option><option value="2">Sudah lulus</option></select>
   </div>
   <div id="count" class="muted small"></div>
   <div id="list" class="vlist" style="margin-top:8px"></div>
@@ -170,7 +162,7 @@ async function pageLemma(id) {
   const R = L.root ? (await roots()).find((r) => r.root === L.root) : null;
   const fam = R ? R.lemmas.filter((x) => x !== L.id).map((x) => LEMMAS[x]) : [];
   const cum = LEMMAS.slice(0, id + 1).reduce((a, x) => a + x.n, 0);
-  const s = SRS[id];
+  const s = S.card(id);
   $app.innerHTML = `
   <div class="lemma-head">
     <div>
@@ -180,7 +172,7 @@ async function pageLemma(id) {
       <div class="muted small">Menguasai ${id + 1} kata teratas s.d. kata ini = ${pct(cum / TOTAL_WORDS)} kata Al-Qur'an.</div>
       <div class="row" style="margin-top:12px">
         <button class="btn sm" id="play">▶ Dengarkan</button>
-        <button class="btn sm ${s ? "" : "primary"}" id="learn">${s ? (level(id) >= 2 ? "✓ Sudah mantap" : "Sedang dipelajari") : "+ Pelajari"}</button>
+        <button class="btn sm ${s ? "" : "primary"}" id="learn">${s ? (level(id) === 3 ? "✓ Dikuasai" : level(id) === 2 ? "✓ Lulus · ulang " + S.fmtT(Math.max(0, s.due - Date.now())) + " lagi" : "Sedang dipelajari") : "+ Pelajari sekarang"}</button>
         ${s ? "" : `<button class="btn sm" id="known">Sudah hafal</button>`}
         ${s ? `<button class="btn sm" id="reset">Atur ulang</button>` : ""}
       </div>
@@ -193,9 +185,9 @@ async function pageLemma(id) {
   <div class="row" style="justify-content:center;margin-top:12px"><button id="more" class="btn">Ayat lainnya</button></div>`;
   const $ = (x) => document.getElementById(x);
   $("play").onclick = () => play(O[0]);
-  $("learn").onclick = () => { if (!SRS[id]) { SRS[id] = { iv: 0, due: Date.now(), reps: 0 }; saveSRS(); pageLemma(id); } };
-  if ($("known")) $("known").onclick = () => { SRS[id] = { iv: 30, due: Date.now() + 30 * DAY, reps: 1 }; saveSRS(); pageLemma(id); };
-  if ($("reset")) $("reset").onclick = () => { delete SRS[id]; saveSRS(); pageLemma(id); };
+  $("learn").onclick = () => { if (!S.card(id)) { S.st.cards[id] = { q: 0, s: 0, iv: 0, ef: 2.5, due: Date.now(), r: 0, l: 0 }; S.save(); location.hash = "#/latihan"; } };
+  if ($("known")) $("known").onclick = () => { S.st.cards[id] = { q: 1, s: 0, iv: 30, ef: 2.5, due: S.dayStart(S.today() + 30), r: 1, l: 0 }; S.save(); pageLemma(id); };
+  if ($("reset")) $("reset").onclick = () => { delete S.st.cards[id]; S.save(); pageLemma(id); };
   let shown = 0;
   async function more() {
     const next = groups.slice(shown, shown + 10); shown += next.length;
@@ -268,124 +260,14 @@ async function pageSurah(n, q) {
   const a = q.get("a"); if (a) document.getElementById("a" + a)?.scrollIntoView({ block: "center" });
 }
 
-// ---------- latihan (spaced repetition sederhana) ----------
-function buildQueue() {
-  const now = Date.now();
-  const due = Object.entries(SRS).filter(([, s]) => s.due <= now).sort((a, b) => a[1].due - b[1].due).map(([id]) => +id);
-  const today = new Date().toDateString();
-  const log = store.get("newlog", { day: today, n: 0 });
-  if (log.day !== today) { log.day = today; log.n = 0; store.set("newlog", log); }
-  const fresh = [];
-  for (const L of LEMMAS) {
-    if (fresh.length >= Math.max(0, settings.newPerDay - log.n)) break;
-    if (SRS[L.id] || !L.mean.length) continue;
-    if (settings.contentOnly && !CONTENT_POS.has(L.pos)) continue;
-    fresh.push(L.id);
-  }
-  return { due, fresh };
-}
-
-function grade(id, g) { // g: 0 lupa, 1 ingat, 2 mudah
-  const isNew = !SRS[id];
-  const s = SRS[id] || { iv: 0, due: 0, reps: 0 };
-  if (isNew) { const log = store.get("newlog", { day: new Date().toDateString(), n: 0 }); log.n++; store.set("newlog", log); }
-  if (g === 0) { s.iv = 0; s.due = Date.now() + 60e3; }
-  else { s.iv = s.iv < 1 ? (g === 2 ? 4 : 1) : Math.round(s.iv * (g === 2 ? 3.5 : 2.5)); s.due = Date.now() + s.iv * DAY; }
-  s.reps++; SRS[id] = s; saveSRS();
-}
-
-function pagePractice() {
-  let mode = store.get("mode", "kartu");
-  const { due, fresh } = buildQueue();
-  let queue = [...due, ...fresh], done = 0;
-  const total = queue.length;
-  $app.innerHTML = `<div class="study">
-    <div class="row" style="justify-content:space-between"><h1 style="margin:16px 0 4px">Latihan</h1>
-      <div class="tabs"><button data-m="kartu">Kartu</button><button data-m="kuis">Kuis</button></div></div>
-    <div class="muted small">${due.length} ulangan · ${fresh.length} kata baru hari ini</div>
-    <div class="progress" style="margin:10px 0"><div id="bar" style="width:0"></div></div>
-    <div id="stage"></div>
-    <details class="card" style="margin-top:16px"><summary><b>Pengaturan</b></summary>
-      <div class="toolbar" style="margin-bottom:0"><label class="row small">Kata baru per hari
-        <select id="npd">${[5, 10, 15, 20, 30, 50].map((x) => `<option ${x === settings.newPerDay ? "selected" : ""}>${x}</option>`).join("")}</select></label>
-      <label class="row small"><input type="checkbox" id="co" ${settings.contentOnly ? "checked" : ""}> Hanya kata benda/kerja/sifat</label></div>
-    </details></div>`;
-  const $ = (x) => document.getElementById(x);
-  document.querySelectorAll(".tabs button").forEach((b) => {
-    b.classList.toggle("on", b.dataset.m === mode);
-    b.onclick = () => { mode = b.dataset.m; store.set("mode", mode); document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x === b)); next(); };
-  });
-  $("npd").onchange = (e) => { settings.newPerDay = +e.target.value; saveSettings(); pagePractice(); };
-  $("co").onchange = (e) => { settings.contentOnly = e.target.checked; saveSettings(); pagePractice(); };
-
-  function finish(id, g) {
-    grade(id, g); queue.shift();
-    if (g === 0) queue.push(id); else done++;
-    $("bar").style.width = (done / Math.max(total, 1)) * 100 + "%";
-    next();
-  }
-  function next() {
-    const id = queue[0];
-    if (id === undefined) {
-      const c = coverage();
-      $("stage").innerHTML = `<div class="card empty"><div style="font-size:40px">🌿</div><h2>Selesai untuk hari ini</h2>
-        <p class="muted">Kamu sudah mempelajari ${fmt(c.nl)} lemma, mencakup <b>${pct(c.learned / TOTAL_WORDS)}</b> kata Al-Qur'an.</p>
-        <div class="row" style="justify-content:center"><a class="btn" href="#/surah/1">Baca Al-Fatihah</a><a class="btn" href="#/kosakata">Lihat kosakata</a></div></div>`;
-      return;
-    }
-    const L = LEMMAS[id], isNew = !SRS[id];
-    if (mode === "kuis" && !isNew) return quiz(L);
-    card(L, isNew);
-  }
-  function card(L, isNew) {
-    $("stage").innerHTML = `<div class="card flash">
-      ${isNew ? `<div><span class="pill accent">kata baru · #${L.id + 1}</span></div>` : ""}
-      <div class="ar big">${L.ar}</div><div class="muted">${esc(L.tr)}</div>
-      <div id="ans" class="answer" hidden><div class="meanings">${esc(L.mean.join("; "))}</div>
-        <div class="muted small">${L.posId} · akar ${rootSpaced(L.root)} · ${fmt(L.n)}× dalam Al-Qur'an</div>
-        <div id="ex" class="small" style="text-align:right"></div></div>
-      <button id="show" class="btn primary">Tampilkan arti</button>
-      <div id="gr" class="grade" hidden>
-        <button class="btn again" data-g="0">Lupa<small>&lt;1 menit</small></button>
-        <button class="btn good" data-g="1">Ingat<small>${isNew ? "1 hari" : Math.round((SRS[L.id]?.iv || 1) * 2.5) + " hari"}</small></button>
-        <button class="btn easy" data-g="2">Mudah<small>${isNew ? "4 hari" : Math.round((SRS[L.id]?.iv || 1) * 3.5) + " hari"}</small></button>
-      </div></div>`;
-    const reveal = async () => {
-      $("ans").hidden = false; $("show").hidden = true; $("gr").hidden = false;
-      const o = (await occ())[L.id][0]; play(o);
-      $("ex").innerHTML = await verseHTML(o);
-    };
-    $("show").onclick = reveal;
-    $("gr").querySelectorAll("button").forEach((b) => (b.onclick = () => finish(L.id, +b.dataset.g)));
-  }
-  function quiz(L) {
-    const pool = LEMMAS.slice(Math.max(0, L.id - 60), L.id + 60).filter((x) => x.id !== L.id && x.mean[0] && x.mean[0] !== L.mean[0]);
-    const same = pool.filter((x) => x.pos === L.pos);
-    const src = same.length >= 3 ? same : pool, opts = new Set();
-    while (opts.size < 3 && opts.size < src.length) opts.add(src[Math.floor(Math.random() * src.length)].mean[0]);
-    const choices = [...opts, L.mean[0]].sort(() => Math.random() - 0.5);
-    $("stage").innerHTML = `<div class="card flash"><div class="muted small">Apa arti kata ini?</div>
-      <div class="ar big">${L.ar}</div><div class="muted">${esc(L.tr)}</div>
-      <div class="opts">${choices.map((c) => `<button class="btn opt">${esc(c)}</button>`).join("")}</div>
-      <div id="fb" class="small"></div></div>`;
-    document.querySelectorAll(".opt").forEach((b) => (b.onclick = () => {
-      const ok = b.textContent === L.mean[0];
-      document.querySelectorAll(".opt").forEach((x) => { x.disabled = true; if (x.textContent === L.mean[0]) x.classList.add("right"); });
-      if (!ok) b.classList.add("wrong");
-      $("fb").innerHTML = `<p>${ok ? "✓ Benar!" : "✗ Belum tepat."} <b>${esc(L.mean.join("; "))}</b></p><button class="btn primary" id="go">Lanjut</button>`;
-      $("go").onclick = () => finish(L.id, ok ? 1 : 0);
-    }));
-  }
-  next();
-}
-
 function notFound() { $app.innerHTML = `<div class="empty"><h1>Halaman tidak ditemukan</h1><a href="#/">Kembali ke beranda</a></div>`; }
 
 // ---------- router ----------
 async function route() {
   const [path, qs] = (location.hash.slice(1) || "/").split("?");
   const q = new URLSearchParams(qs), parts = path.split("/").filter(Boolean);
-  document.querySelectorAll("[data-nav]").forEach((a) => a.classList.toggle("active", a.dataset.nav === (parts[0] === "kata" ? "kosakata" : parts[0] || "home")));
+  document.querySelectorAll("[data-nav]").forEach((a) => a.classList.toggle("active", a.dataset.nav === (["kata", "akar"].includes(parts[0]) ? "kosakata" : parts[0] || "home")));
+  leaveStudy();
   try {
     switch (parts[0]) {
       case undefined: pageHome(); break;
@@ -393,7 +275,8 @@ async function route() {
       case "kata": await pageLemma(+parts[1]); break;
       case "akar": parts[1] ? await pageRoot(decodeURIComponent(parts[1])) : await pageRoots(q); break;
       case "surah": parts[1] ? await pageSurah(+parts[1], q) : pageSurahList(); break;
-      case "latihan": pagePractice(); break;
+      case "latihan": await pageStudy(); break;
+      case "statistik": await pageStats(); break;
       default: notFound();
     }
   } catch (e) { console.error(e); $app.innerHTML = `<div class="empty"><h1>Gagal memuat</h1><p class="muted">${esc(e.message)}</p></div>`; }
@@ -401,7 +284,14 @@ async function route() {
 }
 
 (async () => {
-  [LEMMAS, CHAPTERS] = await Promise.all([getJSON("data/lemmas.json"), getJSON("data/chapters.json")]);
+  let M;
+  [LEMMAS, CHAPTERS, M] = await Promise.all([getJSON("data/lemmas.json"), getJSON("data/chapters.json"), mushaf()]);
+  for (const sn in M) M[sn].p.forEach((p, i) => { if (!PAGE_LABEL[p]) PAGE_LABEL[p] = `${CHAPTERS[sn - 1].name} ${i + 1}`; });
+  const fat = await surah(1);
+  initStudy({
+    app: $app, LEMMAS, CHAPTERS, TOTAL_WORDS, occ, mushaf, verseHTML, esc, fmt, pct, rootSpaced, play,
+    pageLabel: (p) => PAGE_LABEL[p] || "", surahLemmas: { 1: [...new Set(fat.flatMap((v) => v.w.map((w) => w[3])))] },
+  });
   window.addEventListener("hashchange", route);
   route();
 })();

@@ -4,11 +4,14 @@ Web app untuk belajar kosakata Al-Qur'an dari kata yang paling sering muncul.
 **300 lemma teratas mencakup ±74% dari 77.429 kata Al-Qur'an**, dan 1.000 lemma mencakup ±89%.
 
 Fitur:
-- **Kosakata**: 4.871 lemma diurutkan berdasarkan frekuensi. Bisa dicari lewat arti, latin, atau huruf Arab, dan difilter per jenis kata atau status hafalan.
-- **Detail kata**: arti, jenis kata, bentuk kata kerja (I–XII), akar, kata-kata seakar, dan semua ayat tempat kata itu muncul (disorot) beserta terjemah Kemenag.
-- **Akar kata**: 1.642 akar beserta rumpun katanya.
-- **Baca surah**: 114 surah kata per kata (arti Indonesia + transliterasi) dan terjemah Kemenag per ayat. Ketuk kata untuk membuka detailnya.
-- **Latihan**: flashcard dengan pengulangan berjarak dan kuis pilihan ganda. Progres ditampilkan sebagai persentase kata Al-Qur'an yang sudah dikuasai. Progres disimpan di browser (localStorage).
+- **Latihan (SRS ala Anki)**: soal pilihan ganda A–D, lalu nilai sendiri Lagi/Sulit/Baik/Mudah. Kartu baru melewati langkah 1 dan 10 menit, lalu jaraknya dikali faktor kemudahan. Kata baru bisa diambil dari kata yang **paling sering** muncul atau **urut mushaf** per juz/halaman, dan bisa difilter Fi'il/Isim/Harf. Setiap jawaban menampilkan arti, kata dasar, akar, audio, dan konteks ayat dengan terjemah Kemenag. Ada juga latihan kata yang sering lupa, kuis cepat, dan pintasan keyboard.
+- **Gamifikasi**: streak harian, target harian, lencana pencapaian, dan "% kata Al-Qur'an yang kamu pahami", total maupun per juz.
+- **Statistik**: aktivitas 30 hari, jadwal ulangan, pemahaman per juz, serta cadangan dan pemulihan progres (file JSON).
+- **Kosakata**: 4.871 kata dasar (lemma) diurutkan berdasarkan frekuensi, dengan pencarian Arab/latin/arti.
+- **Detail kata, akar kata, dan baca surah** kata per kata (arti Indonesia, transliterasi, terjemah Kemenag).
+
+Mesin latihan diadaptasi dari aplikasi latihan kosakata juz 1–2 (artifact "Kosakata Al-Qur'an").
+Progres tersimpan di browser (localStorage).
 
 ## Menjalankan
 
