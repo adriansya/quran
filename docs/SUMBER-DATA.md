@@ -38,7 +38,8 @@ Terjemahan Indonesia yang tersedia: **33 = Indonesian Islamic Affairs Ministry (
 - Lisensi: **GNU GPL**, © Kais Dukes. Syarat: hanya boleh menyalin/mendistribusikan **verbatim**
   dan wajib menyertakan copyright notice. Konsekuensi: kode aplikasi yang membundel data ini
   sebaiknya ikut GPL, dan file asli disimpan apa adanya (hasil olahan dibuat terpisah).
-- Unduh: form di `https://corpus.quran.com/download/` **mewajibkan alamat email** (ditolak tanpa email).
+- Unduh: form di `https://corpus.quran.com/download/` mewajibkan alamat email. File sudah diunduh ke
+  `data/raw/quranic-corpus-morphology-0.4.txt` (128.276 segmen, 77.429 kata, cocok 100% dengan lokasi kata Quran.com).
 - Format (TSV, satu baris per *segmen*): `LOCATION  FORM  TAG  FEATURES`
   - `LOCATION` = `(surah:ayat:kata:segmen)` → digabung ke kata Quran.com lewat `surah:ayat:kata`.
   - `FEATURES` berisi `STEM|POS:N|LEM:...|ROOT:...` dll., teks dalam transliterasi Buckwalter.
