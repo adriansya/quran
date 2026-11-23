@@ -1,0 +1,67 @@
+# Sumber Data — Aplikasi Kosakata Al-Qur'an
+
+Hasil pengecekan langsung (23 Nov 2026) terhadap tiga sumber utama.
+
+## 1. Quran.com API v4 — teks & terjemah per kata
+
+Base: `https://api.quran.com/api/v4` — publik, tanpa auth.
+
+| Kebutuhan | Endpoint |
+|---|---|
+| Daftar surah (nama Indonesia) | `GET /chapters?language=id` |
+| Ayat + kata per kata (Indonesia) | `GET /verses/by_chapter/{surah}?words=true&language=id&word_fields=text_uthmani,text_imlaei,location&translations=33&per_page=50&page=N` |
+| Satu ayat | `GET /verses/by_key/{surah}:{ayat}?words=true&language=id&...` |
+| Terjemah Kemenag satu surah utuh | `GET /quran/translations/33?chapter_number={surah}` |
+| Daftar terjemahan | `GET /resources/translations` |
+
+Contoh hasil kata per kata (QS 1:2, `language=id`):
+
+```
+1:2:1  ٱلْحَمْدُ        pujian           al-ḥamdu
+1:2:2  لِلَّهِ          bagi Allah       lillahi
+1:2:3  رَبِّ            Tuhan            rabbi
+1:2:4  ٱلْعَـٰلَمِينَ    alam semesta     l-ʿālamīna
+1:2:5  ٢               (2)              ← char_type_name = "end", abaikan
+```
+
+Field per kata: `id, position, location (s:a:k), text_uthmani, text_imlaei, translation.text,
+transliteration.text, audio_url (wbw/001_002_001.mp3), page_number, line_number, char_type_name`.
+
+Terjemahan Indonesia yang tersedia: **33 = Indonesian Islamic Affairs Ministry (Kemenag)**,
+134 = King Fahad Quran Complex, 141 = The Sabiq Company.
+
+**Batasan:** API v4 publik **tidak** menyediakan root/lemma per kata → ambil dari Quranic Corpus.
+
+## 2. Quranic Arabic Corpus — morfologi (akar kata, lemma, POS)
+
+- File: *Quranic Arabic Corpus morphology v0.4* (`quranic-corpus-morphology-0.4.txt`).
+- Lisensi: **GNU GPL**, © Kais Dukes. Syarat: hanya boleh menyalin/mendistribusikan **verbatim**
+  dan wajib menyertakan copyright notice. Konsekuensi: kode aplikasi yang membundel data ini
+  sebaiknya ikut GPL, dan file asli disimpan apa adanya (hasil olahan dibuat terpisah).
+- Unduh: form di `https://corpus.quran.com/download/` **mewajibkan alamat email** (ditolak tanpa email).
+- Format (TSV, satu baris per *segmen*): `LOCATION  FORM  TAG  FEATURES`
+  - `LOCATION` = `(surah:ayat:kata:segmen)` → digabung ke kata Quran.com lewat `surah:ayat:kata`.
+  - `FEATURES` berisi `STEM|POS:N|LEM:...|ROOT:...` dll., teks dalam transliterasi Buckwalter.
+- Situs baru `qurancorpus.app` (repo `kaisdukes/quranic-corpus`, GPL-3.0) belum merilis data unduhan.
+
+## 3. Kemenag RI — terjemah, tafsir, transliterasi
+
+- Situs resmi `quran.kemenag.go.id` memakai API `https://web-api.qurankemenag.net` dengan endpoint
+  `quran-surah`, `quran-surah/{n}`, `quran-ayah`, `quran-tafsir/{id}`.
+  Akses langsung dari luar situs → **HTTP 403** (tidak untuk publik).
+- Alternatif yang terbuka: **equran.id** (mencantumkan sumber "Al-Quran: Kemenag RI").
+  - `GET https://equran.id/api/v2/surat/{n}` → `nomor, nama, namaLatin, jumlahAyat, tempatTurun,
+    arti, deskripsi, audioFull, ayat[]` dengan ayat: `nomorAyat, teksArab, teksLatin, teksIndonesia, audio`.
+  - `GET https://equran.id/api/v2/tafsir/{n}` → `tafsir[]: {ayat, teks}` (tafsir Kemenag).
+- Terjemah Kemenag juga ada di Quran.com (resource 33), jadi itu jalur utama untuk terjemah ayat.
+
+## Rencana penggabungan
+
+```
+Quran.com (kata + arti per kata ID + transliterasi + audio)
+        └─ join by surah:ayat:kata ─ Quranic Corpus (root, lemma, POS)
+Kemenag via Quran.com #33 / equran.id (terjemah ayat, transliterasi, tafsir)
+```
+
+Hasil: tabel `words` (±77.4 ribu kata), `lemmas`, `roots` → kosakata dikelompokkan per akar/lemma,
+dengan frekuensi kemunculan dan contoh ayat beserta terjemah Kemenag.
