@@ -42,7 +42,7 @@ const chapterName = (n) => CHAPTERS[n - 1]?.name ?? n;
 
 function lemmaRow(L) {
   return `<a class="vitem" href="#/kata/${L.id}">
-    <span class="rank">#${L.id + 1}</span>
+    <span class="rank" title="Urutan frekuensi: 1 = paling sering muncul">${fmt(L.id + 1)}</span>
     <span><div class="mean">${esc(L.mean.slice(0, 2).join("; ") || "—")}</div>
       <div class="meta">${esc(L.tr)} · ${L.posId}${L.vform ? " (" + L.vform + ")" : ""} · ${fmt(L.n)}×</div></span>
     <span class="ar-col"><span class="ar-stack"><span class="ar">${L.ar}</span>${L.rasm ? `<span class="ar rasm-sm" title="tulisan mushaf">${L.rasm}</span>` : ""}</span><span class="dot s${level(L.id)}" title="status hafalan"></span></span>
@@ -168,7 +168,7 @@ async function pageLemma(id) {
   $app.innerHTML = `
   <div class="lemma-head">
     <div>
-      <div class="row"><span class="pill accent">${L.posId}${L.vform ? " · bentuk " + L.vform : ""}</span><span class="pill">peringkat #${id + 1}</span></div>
+      <div class="row"><span class="pill accent">${L.posId}${L.vform ? " · bentuk " + L.vform : ""}</span><span class="pill rankpill">No. ${fmt(id + 1)} terbanyak</span></div>
       <div class="meanings">${esc(L.mean.join("; ") || "—")}</div>
       <div class="muted">${esc(L.tr)} · muncul <b>${fmt(L.n)}×</b> · akar ${R ? `<a href="#/akar/${encodeURIComponent(R.bw)}" class="ar" style="font-size:20px">${rootSpaced(L.root)}</a>` : "—"}</div>
       ${L.homo ? `<div class="small homo">Tulisannya sama dengan kata lain (homograf): ${L.homo.map((h) => `<a href="#/kata/${h}">${esc(LEMMAS[h].mean[0] || "")}</a>`).join(", ")}</div>` : ""}

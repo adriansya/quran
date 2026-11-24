@@ -249,7 +249,7 @@ export async function pageStudy() {
     ["card", "opts"].forEach((x) => ($(x).hidden = false));
     $("card").classList.remove("in"); void $("card").offsetWidth; $("card").classList.add("in");
     $("qLab").innerHTML = `Apa artinya? <span class="tag ${kind}">${KIND[kind]}</span>`;
-    $("qMeta").textContent = `${KELAS[L.k]}${L.homo ? " · " + L.posId : ""} · ${C.fmt(L.n)}× dalam Al-Qur'an`;
+    $("qMeta").textContent = `No. ${C.fmt(L.id + 1)} · ${KELAS[L.k]}${L.homo ? " · " + L.posId : ""} · ${C.fmt(L.n)}× dalam Al-Qur'an`;
     $("word").textContent = L.ar;
     $("hint").textContent = L.tr;
     $("rasm").innerHTML = C.rasmHTML(L);
@@ -277,7 +277,7 @@ export async function pageStudy() {
     $("det").innerHTML = `
       <dt>Arti</dt><dd><b>${C.esc(L.mean.join("; "))}</b></dd>
       <dt>Kata dasar</dt><dd><a href="#/kata/${L.id}" class="ar dar">${L.ar}</a> <span class="muted">${C.esc(L.tr)} · ${L.posId}${L.vform ? " " + L.vform : ""}</span></dd>
-      ${L.rasm ? `<dt>Tulisan mushaf</dt><dd><span class="ar dar">${L.rasm}</span>${L.rasmX ? ' <span class="pill khas">ejaan khas mushaf</span>' : ""}</dd>` : ""}
+      ${L.rasm ? `<dt>Tulisan mushaf</dt><dd class="rasm-dd"><span class="ar">${L.rasm}</span>${L.rasmX ? ' <span class="pill khas">ejaan khas mushaf</span>' : ""}</dd>` : ""}
       <dt>Akar</dt><dd>${L.root ? `<span class="ar dar">${C.rootSpaced(L.root)}</span>` : "—"} <span class="muted">· muncul ${C.fmt(L.n)}×</span></dd>`;
     // konteks: utamakan ayat di sumber yang dipilih
     const os = IDX.occ[cur], src = S.st.src;
