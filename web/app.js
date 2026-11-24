@@ -169,6 +169,7 @@ async function pageLemma(id) {
       <div class="row"><span class="pill accent">${L.posId}${L.vform ? " · bentuk " + L.vform : ""}</span><span class="pill">peringkat #${id + 1}</span></div>
       <div class="meanings">${esc(L.mean.join("; ") || "—")}</div>
       <div class="muted">${esc(L.tr)} · muncul <b>${fmt(L.n)}×</b> · akar ${R ? `<a href="#/akar/${encodeURIComponent(R.bw)}" class="ar" style="font-size:20px">${rootSpaced(L.root)}</a>` : "—"}</div>
+      ${L.homo ? `<div class="small homo">Tulisannya sama dengan kata lain (homograf): ${L.homo.map((h) => `<a href="#/kata/${h}">${esc(LEMMAS[h].mean[0] || "")}</a>`).join(", ")}</div>` : ""}
       <div class="muted small">Menguasai ${id + 1} kata teratas s.d. kata ini = ${pct(cum / TOTAL_WORDS)} kata Al-Qur'an.</div>
       <div class="row" style="margin-top:12px">
         <button class="btn sm" id="play">▶ Dengarkan</button>
@@ -286,6 +287,10 @@ async function route() {
 (async () => {
   let M;
   [LEMMAS, CHAPTERS, M] = await Promise.all([getJSON("data/lemmas.json"), getJSON("data/chapters.json"), mushaf()]);
+  if (S.st.dv < S.DATA_VERSION) {
+    if (Object.keys(S.st.cards).length) S.remapIds(await getJSON("data/remap-v1.json"));
+    else { S.st.dv = S.DATA_VERSION; S.save(); }
+  }
   for (const sn in M) M[sn].p.forEach((p, i) => { if (!PAGE_LABEL[p]) PAGE_LABEL[p] = `${CHAPTERS[sn - 1].name} ${i + 1}`; });
   const fat = await surah(1);
   initStudy({

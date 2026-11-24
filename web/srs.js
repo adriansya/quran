@@ -58,7 +58,9 @@ export function preview(c, now = Date.now()) {
 
 // ---------- state ----------
 const KEY = "kq.v2";
-const blank = () => ({ cards: {}, days: {}, extra: {}, w: {}, scope: "all", npd: 10, src: "freq", sk: { d: 0, n: 0 }, badges: [], t: 0 });
+// Versi nomor kata. v2: kata ganti yang hanya beda tanda mad digabung, nomor bergeser.
+export const DATA_VERSION = 2;
+const blank = () => ({ cards: {}, days: {}, extra: {}, w: {}, scope: "all", npd: 10, src: "freq", sk: { d: 0, n: 0 }, badges: [], t: 0, dv: DATA_VERSION });
 export let st = blank();
 export let canStore = true;
 
@@ -73,15 +75,27 @@ function migrateV1() { // progres versi pertama web ini (kq.srs: {id: {iv, due, 
     }
     const set = JSON.parse(localStorage.getItem("kq.settings") || "{}");
     if (set.newPerDay) st.npd = set.newPerDay;
-    st.t = 1;
+    st.t = 1; st.dv = 1;
   } catch { /* abaikan */ }
 }
 export function load() {
   try {
     localStorage.setItem("kq.t", "1"); localStorage.removeItem("kq.t");
     const v = localStorage.getItem(KEY);
-    if (v) st = Object.assign(blank(), JSON.parse(v)); else migrateV1();
+    if (v) { const o = JSON.parse(v); st = Object.assign(blank(), o, { dv: o.dv || 1 }); } else migrateV1();
   } catch { canStore = false; }
+}
+// Pindahkan progres dari nomor kata lama ke nomor baru (map[lama] = baru).
+export function remapIds(map) {
+  const cards = {}, w = {};
+  for (const [old, c] of Object.entries(st.cards)) {
+    const n = map[old];
+    if (n == null) continue;
+    const y = cards[n];
+    if (!y || (c.q === 1 && (y.q !== 1 || c.iv > y.iv))) cards[n] = c;
+  }
+  for (const [old, k] of Object.entries(st.w)) { const n = map[old]; if (n != null) w[n] = (w[n] || 0) + k; }
+  st.cards = cards; st.w = w; st.dv = DATA_VERSION; save();
 }
 export function save() { st.t = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(st)); } catch { canStore = false; } }
 export function replaceState(s) { st = Object.assign(blank(), s); save(); }

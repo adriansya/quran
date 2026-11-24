@@ -15,6 +15,10 @@ import collections
 import json
 import pathlib
 import re
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from arabic_std import PRONOUNS, consonant_key, std  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
@@ -76,8 +80,8 @@ def analyse(segs):
     lem = get("LEM:")
     pos = get("POS:") or stem[1]
     if lem is None:  # kata ganti dsb. tidak punya lemma di Corpus
-        lem = re.sub(r"[aiuo~FNK,.]", "", stem[0]) or stem[0]
-        lem = f"{pos}:{lem}"
+        # kunci = konsonan saja, agar نَا/نَآ, هِۦ/هِۦٓ, أَنَا/أَنَا۠ menjadi satu kata
+        lem = f"{pos}:{consonant_key(stem[0]) or stem[0]}"
     form = None
     if pos == "V":
         form = next((f.strip("()") for f in feats if f.startswith("(") and f.endswith(")")), "I")
@@ -148,9 +152,16 @@ def main():
             if m and m not in means:
                 means.append(m)
         means = means[:4]
+        kind, _, key = k.partition(":") if ":" in k and k.split(":")[0] in POS_ID or k.startswith("INL:") else ("", "", k)
+        if kind == "PRON" and key in PRONOUNS:
+            ar, means = PRONOUNS[key][0], PRONOUNS[key][1]
+        elif kind:  # huruf muqatta'ah dll: pakai tulisan mushaf
+            ar = top_form
+        else:
+            ar = std(display)
         item = {
             "id": lid[k],
-            "ar": bw2ar(display) if not k.startswith(pos + ":") else bw2ar(L["stems"].most_common(1)[0][0]),
+            "ar": ar,
             "bw": k,
             "root": bw2ar(L["root"]) if L["root"] else None,
             "pos": pos,
@@ -167,6 +178,15 @@ def main():
             r = roots.setdefault(L["root"], {"root": bw2ar(L["root"]), "bw": L["root"], "n": 0, "lemmas": []})
             r["n"] += item["n"]
             r["lemmas"].append(item["id"])
+
+    # homograf: tulisan sama, kata berbeda (mis. صَالِح "saleh" vs Nabi Saleh)
+    same = collections.defaultdict(list)
+    for it in lemma_list:
+        same[it["ar"]].append(it["id"])
+    for ids in same.values():
+        if len(ids) > 1:
+            for i in ids:
+                lemma_list[i]["homo"] = [j for j in ids if j != i]
 
     root_list = sorted(roots.values(), key=lambda r: -r["n"])
     OUT.mkdir(parents=True, exist_ok=True)

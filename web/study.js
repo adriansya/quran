@@ -82,7 +82,7 @@ function pick(cur, now = Date.now()) {
 }
 function options(L) {
   const out = [L], seen = new Set([norm(answerOf(L))]);
-  const ok = (M) => M !== L && M.mean.length && !seen.has(norm(answerOf(M))) && !L.mean.some((m) => norm(m) === norm(answerOf(M))) && (!L.root || M.root !== L.root);
+  const ok = (M) => M !== L && M.mean.length && !seen.has(norm(answerOf(M))) && !L.mean.some((m) => norm(m) === norm(answerOf(M))) && (!L.root || M.root !== L.root) && M.ar !== L.ar;
   const near = C.LEMMAS.slice(Math.max(0, L.id - 80), L.id + 80).filter((M) => M.k === L.k);
   for (const pool of [shuffle(near), shuffle(C.LEMMAS.slice(0, 1500).filter((M) => M.k === L.k)), shuffle(C.LEMMAS.slice(0, 1500))])
     for (const M of pool) { if (out.length >= 4) break; if (ok(M)) { out.push(M); seen.add(norm(answerOf(M))); } }
@@ -248,7 +248,7 @@ export async function pageStudy() {
     ["card", "opts"].forEach((x) => ($(x).hidden = false));
     $("card").classList.remove("in"); void $("card").offsetWidth; $("card").classList.add("in");
     $("qLab").innerHTML = `Apa artinya? <span class="tag ${kind}">${KIND[kind]}</span>`;
-    $("qMeta").textContent = `${KELAS[L.k]} · ${C.fmt(L.n)}× dalam Al-Qur'an`;
+    $("qMeta").textContent = `${KELAS[L.k]}${L.homo ? " · " + L.posId : ""} · ${C.fmt(L.n)}× dalam Al-Qur'an`;
     $("word").textContent = L.ar;
     $("hint").textContent = L.tr;
     $("opts").innerHTML = options(L).map((M, i) => `<button class="opt" type="button" data-id="${M.id}"><span class="k">${"ABCD"[i]}</span><span class="t">${C.esc(answerOf(M))}</span></button>`).join("");
