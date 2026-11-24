@@ -160,6 +160,7 @@ export async function pageStudy() {
         <div class="q"><span class="lab" id="qLab"></span><span id="qMeta" class="small muted"></span></div>
         <div class="ar word" id="word"></div>
         <p class="hint" id="hint"></p>
+        <p class="rasm" id="rasm"></p>
       </section>
       <div class="opts" id="opts" role="group" aria-label="Pilihan jawaban"></div>
       <button class="idk" id="idk" type="button">Saya belum tahu, tampilkan jawabannya</button>
@@ -251,6 +252,7 @@ export async function pageStudy() {
     $("qMeta").textContent = `${KELAS[L.k]}${L.homo ? " · " + L.posId : ""} · ${C.fmt(L.n)}× dalam Al-Qur'an`;
     $("word").textContent = L.ar;
     $("hint").textContent = L.tr;
+    $("rasm").innerHTML = C.rasmHTML(L);
     $("opts").innerHTML = options(L).map((M, i) => `<button class="opt" type="button" data-id="${M.id}"><span class="k">${"ABCD"[i]}</span><span class="t">${C.esc(answerOf(M))}</span></button>`).join("");
     $("opts").querySelectorAll(".opt").forEach((b) => (b.onclick = () => answer(+b.dataset.id)));
   }
@@ -275,6 +277,7 @@ export async function pageStudy() {
     $("det").innerHTML = `
       <dt>Arti</dt><dd><b>${C.esc(L.mean.join("; "))}</b></dd>
       <dt>Kata dasar</dt><dd><a href="#/kata/${L.id}" class="ar dar">${L.ar}</a> <span class="muted">${C.esc(L.tr)} · ${L.posId}${L.vform ? " " + L.vform : ""}</span></dd>
+      ${L.rasm ? `<dt>Tulisan mushaf</dt><dd><span class="ar dar">${L.rasm}</span>${L.rasmX ? ' <span class="pill khas">ejaan khas mushaf</span>' : ""}</dd>` : ""}
       <dt>Akar</dt><dd>${L.root ? `<span class="ar dar">${C.rootSpaced(L.root)}</span>` : "—"} <span class="muted">· muncul ${C.fmt(L.n)}×</span></dd>`;
     // konteks: utamakan ayat di sumber yang dipilih
     const os = IDX.occ[cur], src = S.st.src;

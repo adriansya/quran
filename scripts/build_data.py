@@ -72,6 +72,20 @@ def load_corpus():
     return words
 
 
+def skel(s):
+    """Kerangka huruf: tanpa harakat & tanda; varian alif/hamzah/ya disamakan."""
+    s = re.sub(r"[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]", "", s)
+    for a, b in (("ٱ", "ا"), ("أ", "ا"), ("إ", "ا"), ("آ", "ا"), ("ى", "ي"), ("ئ", "ي"), ("ؤ", "و"), ("ء", "")):
+        s = s.replace(a, b)
+    return s
+
+
+def khas(rasm, ar):
+    """Tulisan mushaf berbeda hurufnya dari ejaan standar, selain alif kecil (ٰ) dan ىٰ."""
+    norm = lambda x: skel(x.replace("ىٰ", "ى").replace("\u0670", "ا"))  # noqa: E731
+    return norm(rasm) != norm(ar) and norm(rasm) != skel(ar)
+
+
 def analyse(segs):
     """Ambil lemma, akar, POS dan bentuk kata kerja dari segmen STEM."""
     stem = next(s for s in segs if "STEM" in s[2])
@@ -159,9 +173,24 @@ def main():
             ar = top_form
         else:
             ar = std(display)
+        # tulisan di mushaf (rasm Utsmani): lemma Corpus apa adanya; kata ganti: semua variannya
+        if kind == "PRON":
+            # varian yang beda tulisan saja (mad, wawu/ya kecil), bukan beda harakat
+            seen = {}
+            for st, _ in L["stems"].most_common():
+                f = bw2ar(st)
+                seen.setdefault(re.sub(r"[\u064B-\u0652]", "", f), f)
+            rasm = "، ".join(list(seen.values())[:4]) if len(seen) > 1 else ar
+        elif kind:
+            rasm = ar
+        else:
+            rasm = bw2ar(display)
         item = {
             "id": lid[k],
             "ar": ar,
+            **({"rasm": rasm} if rasm != ar else {}),
+            # "ejaan khas mushaf": huruf berbeda selain alif kecil (mis. صَلَوٰة, رَءَا, سَيِّـَٔات)
+            **({"rasmX": True} if kind != "PRON" and rasm != ar and khas(rasm, ar) else {}),
             "bw": k,
             "root": bw2ar(L["root"]) if L["root"] else None,
             "pos": pos,

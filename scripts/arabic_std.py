@@ -22,7 +22,7 @@ VOWELS = "aiuoFNK~"
 EXACT = {
     "ha`*aA": "هٰذَا", "ha`*a`n": "هٰذَان", "ha`&ulaA^'": "هٰؤُلَاء", "ha`ka*aA": "هٰكَذَا",
     "*a`lik": "ذٰلِك", "la`kin": "لٰكِن", "la`kin~": "لٰكِنّ", "<ila`h": "إِلٰه",
-    ">uwla`^}ik": "أُولٰئِك", "{mora>at": "امْرَأَة", "r~aHoma`n": "رَحْمٰن", "{ll~ah": "اللّٰه", "{ll~ahum~a": "اللّٰهُمَّ",
+    ">uwla`^}ik": "أُولٰئِك", "{d~a`ra`#o": "ادَّارَأَ", "{mora>at": "امْرَأَة", "r~aHoma`n": "رَحْمٰن", "{ll~ah": "اللّٰه", "{ll~ahum~a": "اللّٰهُمَّ",
 }
 # Konsonan yang menentukan identitas kata ganti/huruf (tanpa harakat & tanda mushaf).
 CONS = set("'><&}AbptvjHxd*rzs$SDTZEgfqklmnhwYy")
@@ -55,8 +55,9 @@ def std(bw):
         if prev == "o":
             prev = ""
         after = s[m.end():]
-        if after == "":  # hamzah akhir setelah huruf mati/panjang: di atas garis
-            return "'"
+        if after == "" or (len(after) == 1 and after in "aiu"):
+            # hamzah akhir: kursi mengikuti harakat sebelumnya; setelah huruf mati/panjang di atas garis
+            return {"a": ">", "u": "&", "i": "}"}.get(prev, "'")
         if after.startswith("aA") and prev in ("a", ""):  # hamzah + alif -> آ
             return "|"
         nxt = after[:1]
@@ -77,6 +78,7 @@ def std(bw):
     s = re.sub(r"^A\^", "|", s)
     s = s.replace("^", "")
     # alif kecil (dagger)
+    s = re.sub(r"Y`(?=.)", "aA", s).replace("aaA", "aA")  # التَّوْرَىٰة -> التَّوْرَاة
     s = re.sub(r"Y`", "Y", s)
     s = re.sub(r"aw`A", "aA", s)
     s = re.sub(r"aw`", "aA", s)

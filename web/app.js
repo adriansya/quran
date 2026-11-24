@@ -36,6 +36,8 @@ const stripAr = (s) => s.replace(/[ً-ٰٟۖ-ۭـ]/g, "").replace(/[ٱأإآ]/g,
 const rootSpaced = (r) => (r ? [...r].join(" ") : "—");
 const audioUrl = (loc) => { const [s, a, w] = loc.split(":"); return `${AUDIO}${s.padStart(3, "0")}_${a.padStart(3, "0")}_${w.padStart(3, "0")}.mp3`; };
 const play = (loc) => { new Audio(audioUrl(loc)).play().catch(() => {}); };
+// Tulisan di mushaf (rasm Utsmani) bila berbeda dari ejaan standar.
+const rasmHTML = (L) => (L.rasm ? `<span class="muted">Di mushaf:</span> <span class="ar">${L.rasm}</span>${L.rasmX ? ' <span class="pill khas">ejaan khas mushaf</span>' : ""}` : "");
 const chapterName = (n) => CHAPTERS[n - 1]?.name ?? n;
 
 function lemmaRow(L) {
@@ -43,7 +45,7 @@ function lemmaRow(L) {
     <span class="rank">#${L.id + 1}</span>
     <span><div class="mean">${esc(L.mean.slice(0, 2).join("; ") || "—")}</div>
       <div class="meta">${esc(L.tr)} · ${L.posId}${L.vform ? " (" + L.vform + ")" : ""} · ${fmt(L.n)}×</div></span>
-    <span class="ar-col"><span class="ar">${L.ar}</span><span class="dot s${level(L.id)}" title="status hafalan"></span></span>
+    <span class="ar-col"><span class="ar-stack"><span class="ar">${L.ar}</span>${L.rasm ? `<span class="ar rasm-sm" title="tulisan mushaf">${L.rasm}</span>` : ""}</span><span class="dot s${level(L.id)}" title="status hafalan"></span></span>
   </a>`;
 }
 
@@ -119,7 +121,7 @@ function pageVocab(q) {
       if (state.pos && (state.pos === "X" ? MAIN.has(L.pos) : L.pos !== state.pos)) return false;
       if (state.st !== "") { const lv = level(L.id); if (state.st === "2" ? lv < 2 : String(Math.min(lv, 2)) !== state.st) return false; }
       if (!qs) return true;
-      if (isAr) return stripAr(L.ar).includes(qa) || stripAr(L.form).includes(qa) || (L.root && L.root.includes(qa.replace(/\s/g, "")));
+      if (isAr) return stripAr(L.ar).includes(qa) || stripAr(L.form).includes(qa) || (L.rasm && stripAr(L.rasm).includes(qa)) || (L.root && L.root.includes(qa.replace(/\s/g, "")));
       return L.mean.some((m) => m.toLowerCase().includes(qs)) || L.tr.toLowerCase().includes(qs);
     });
   }
@@ -178,7 +180,7 @@ async function pageLemma(id) {
         ${s ? `<button class="btn sm" id="reset">Atur ulang</button>` : ""}
       </div>
     </div>
-    <div class="ar big">${L.ar}</div>
+    <div class="big-wrap"><div class="ar big">${L.ar}</div>${L.rasm ? `<div class="rasm">${rasmHTML(L)}</div>` : ""}</div>
   </div>
   ${fam.length ? `<h2>Satu akar kata (${fam.length})</h2><div class="chips">${fam.slice(0, 30).map((F) => `<a class="chip" href="#/kata/${F.id}"><span class="ar">${F.ar}</span><span class="small">${esc(F.mean[0] || "")}</span></a>`).join("")}</div>` : ""}
   <h2>Contoh dalam ayat <span class="muted small">(${fmt(O.length)} kemunculan di ${fmt(groups.length)} ayat)</span></h2>
@@ -295,7 +297,7 @@ async function route() {
   const fat = await surah(1);
   initStudy({
     app: $app, LEMMAS, CHAPTERS, TOTAL_WORDS, occ, mushaf, verseHTML, esc, fmt, pct, rootSpaced, play,
-    pageLabel: (p) => PAGE_LABEL[p] || "", surahLemmas: { 1: [...new Set(fat.flatMap((v) => v.w.map((w) => w[3])))] },
+    pageLabel: (p) => PAGE_LABEL[p] || "", rasmHTML, surahLemmas: { 1: [...new Set(fat.flatMap((v) => v.w.map((w) => w[3])))] },
   });
   window.addEventListener("hashchange", route);
   route();
