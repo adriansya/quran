@@ -20,7 +20,8 @@ TERMS = {
     "tafdhil": ("Isim tafdhil", "اسْمُ تَفْضِيلٍ", "lebih/paling"),
     "musyabbahah": ("Shifah musyabbahah", "صِفَةٌ مُشَبَّهَةٌ", "kata sifat tetap"),
     "mubalaghah": ("Shighah mubalaghah", "صِيغَةُ مُبَالَغَةٍ", "sifat yang sangat"),
-    "makan": ("Isim makan/zaman", "اسْمُ مَكَانٍ / زَمَانٍ", "tempat/waktu"),
+    "makan": ("Isim makan", "اسْمُ مَكَانٍ", "kata benda tempat"),
+    "zaman": ("Isim zaman", "اسْمُ زَمَانٍ", "kata benda waktu"),
     "alat": ("Isim alat", "اسْمُ آلَةٍ", "alat"),
     "nisbah": ("Isim nisbah", "اسْمٌ مَنْسُوبٌ", "kata sifat penisbatan"),
     "tasghir": ("Isim tasghir", "اسْمُ تَصْغِيرٍ", "bentuk pengecilan"),
@@ -107,6 +108,14 @@ COLOR_DEFECT = {"Hwy", "byD", "swd", "Hmr", "Sfr", "xDr", "zrq", "bkm", "Erj", "
 ADAD_ROOTS = {"wHd", "Ahd", "vny", "vlv", "rbE", "xms", "sds", "stt", "sbE", "vmn", "tsE", "E$r", "mAy", "Alf"}
 ALAT = {"miSobaAH", "mifotaH", "mikoyaAl", "miyzaAn", "miqomaE", "mivoqaAl"}
 NOT_MAKAN = {"maEo$ar", "mayosir", "maroHab"}
+# Wazan مَفْعَل/مَفْعِل: pembeda makan vs zaman vs masdar mimi adalah makna di ayatnya.
+MAFAL = {
+    "maTolaE": "zaman",      # حَتَّى مَطْلَعِ الْفَجْرِ
+    "m~awoEid": "zaman",     # مَوْعِدُكُمْ يَوْمُ الزِّينَةِ
+    "maholik": "zaman",      # لِمَهْلِكِهِمْ مَوْعِدًا
+    "m~agoram": "masdar_mimi", "m~awoviq": "masdar_mimi", "mabolag": "masdar_mimi", "m~a$ohad": "masdar_mimi",
+    "mawolaY`": "isim", "magonam": "isim", "manokib": "isim",
+}
 
 
 def classify(k, pos, root, feats, means, form, verb_vowel=None):
@@ -164,6 +173,8 @@ def classify(k, pos, root, feats, means, form, verb_vowel=None):
         return "tasghir"
     if base in ALAT:
         return "alat"
+    if base in MAFAL:
+        return MAFAL[base]
     if re.fullmatch(r"ma1o2a3|ma1o2i3", t) and base not in NOT_MAKAN:
         return "makan"
     if pos == "ADJ":

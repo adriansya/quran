@@ -96,6 +96,7 @@ def std(bw):
     s = re.sub(r"Y(?=.)", "y", s)
     s = re.sub(r"iY$", "iy", s)
     s = re.sub(r"oY$", "oy", s)
+    s = re.sub(r"(?<=a)<$", ">", s)  # hamzah akhir setelah fathah di atas alif: مَلْجَأ
     s = re.sub(r"(?<=i)'(?=o)", "}", s)  # hamzah sukun setelah kasrah di atas ya': رِئْي  # ya' sesudah sukun: خِزْي، وَحْي، رَأْي
     return "".join(BW.get(c, c) for c in s)
 
