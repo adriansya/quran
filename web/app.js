@@ -38,6 +38,17 @@ const audioUrl = (loc) => { const [s, a, w] = loc.split(":"); return `${AUDIO}${
 const play = (loc) => { new Audio(audioUrl(loc)).play().catch(() => {}); };
 // Tulisan di mushaf (rasm Utsmani) bila berbeda dari ejaan standar.
 const rasmHTML = (L) => (L.rasm ? `<span class="muted">Di mushaf:</span> <span class="ar">${L.rasm}</span>${L.rasmX ? ' <span class="pill khas">ejaan khas mushaf</span>' : ""}` : "");
+// Info sharaf: wazan & mudhari' (fi'il), jamak & muannats (isim), catatan — sebagai pasangan <dt>/<dd>.
+function sharafRows(L) {
+  const r = [];
+  if (L.wazan) r.push(["Wazan", `<span class="ar dar">${L.wazan}</span>${L.vform ? ` <span class="muted small">bentuk ${L.vform}</span>` : ""}`]);
+  if (L.mudhari) r.push(["Mudhari'", `<span class="ar dar">${L.mudhari}</span>`]);
+  if (L.jamak) r.push(["Jamak", L.jamak.map((j) => `<span class="jm"><span class="ar dar">${j.ar}</span> <span class="muted small">${esc(j.jenis)}</span>${j.wazan ? ` <span class="muted small">wazan</span> <span class="ar wz">${j.wazan}</span>` : ""}</span>`).join("")]);
+  if (L.muannats) r.push(["Muannats", `<span class="ar dar">${L.muannats}</span>`]);
+  if (L.catatan) r.push(["Catatan", `<span class="small">${esc(L.catatan)}</span>`]);
+  if (L.dibentuk) r.push(["Catatan", `<span class="small muted">Bentuk madhi ini tidak tertulis di Al-Qur'an; disusun dari akar dan wazannya.</span>`]);
+  return r.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+}
 const chapterName = (n) => CHAPTERS[n - 1]?.name ?? n;
 
 function lemmaRow(L) {
@@ -171,6 +182,7 @@ async function pageLemma(id) {
       <div class="row"><span class="pill accent">${L.posId}${L.vform ? " · bentuk " + L.vform : ""}</span><span class="pill rankpill">No. ${fmt(id + 1)} terbanyak</span></div>
       <div class="meanings">${esc(L.mean.join("; ") || "—")}</div>
       <div class="muted">${esc(L.tr)} · muncul <b>${fmt(L.n)}×</b> · akar ${R ? `<a href="#/akar/${encodeURIComponent(R.bw)}" class="ar" style="font-size:20px">${rootSpaced(L.root)}</a>` : "—"}</div>
+      ${sharafRows(L) ? `<dl class="det sharaf">${sharafRows(L)}</dl>` : ""}
       ${L.homo ? `<div class="small homo">Tulisannya sama dengan kata lain (homograf): ${L.homo.map((h) => `<a href="#/kata/${h}">${esc(LEMMAS[h].mean[0] || "")}</a>`).join(", ")}</div>` : ""}
       <div class="muted small">Menguasai ${id + 1} kata teratas s.d. kata ini = ${pct(cum / TOTAL_WORDS)} kata Al-Qur'an.</div>
       <div class="row" style="margin-top:12px">
@@ -289,15 +301,14 @@ async function route() {
 (async () => {
   let M;
   [LEMMAS, CHAPTERS, M] = await Promise.all([getJSON("data/lemmas.json"), getJSON("data/chapters.json"), mushaf()]);
-  if (S.st.dv < S.DATA_VERSION) {
-    if (Object.keys(S.st.cards).length) S.remapIds(await getJSON("data/remap-v1.json"));
-    else { S.st.dv = S.DATA_VERSION; S.save(); }
-  }
+  // pindahkan progres lama ke nomor kata versi terbaru, bertahap (v1 -> v2 -> v3)
+  if (!Object.keys(S.st.cards).length) { S.st.dv = S.DATA_VERSION; S.save(); }
+  while (S.st.dv < S.DATA_VERSION) S.remapIds(await getJSON(`data/remap-v${S.st.dv}.json`));
   for (const sn in M) M[sn].p.forEach((p, i) => { if (!PAGE_LABEL[p]) PAGE_LABEL[p] = `${CHAPTERS[sn - 1].name} ${i + 1}`; });
   const fat = await surah(1);
   initStudy({
     app: $app, LEMMAS, CHAPTERS, TOTAL_WORDS, occ, mushaf, verseHTML, esc, fmt, pct, rootSpaced, play,
-    pageLabel: (p) => PAGE_LABEL[p] || "", rasmHTML, surahLemmas: { 1: [...new Set(fat.flatMap((v) => v.w.map((w) => w[3])))] },
+    pageLabel: (p) => PAGE_LABEL[p] || "", rasmHTML, sharafRows, surahLemmas: { 1: [...new Set(fat.flatMap((v) => v.w.map((w) => w[3])))] },
   });
   window.addEventListener("hashchange", route);
   route();

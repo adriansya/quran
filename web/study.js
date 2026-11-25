@@ -278,6 +278,7 @@ export async function pageStudy() {
       <dt>Arti</dt><dd><b>${C.esc(L.mean.join("; "))}</b></dd>
       <dt>Kata dasar</dt><dd><a href="#/kata/${L.id}" class="ar dar">${L.ar}</a> <span class="muted">${C.esc(L.tr)} · ${L.posId}${L.vform ? " " + L.vform : ""}</span></dd>
       ${L.rasm ? `<dt>Tulisan mushaf</dt><dd class="rasm-dd"><span class="ar">${L.rasm}</span>${L.rasmX ? ' <span class="pill khas">ejaan khas mushaf</span>' : ""}</dd>` : ""}
+      ${C.sharafRows(L)}
       <dt>Akar</dt><dd>${L.root ? `<span class="ar dar">${C.rootSpaced(L.root)}</span>` : "—"} <span class="muted">· muncul ${C.fmt(L.n)}×</span></dd>`;
     // konteks: utamakan ayat di sumber yang dipilih
     const os = IDX.occ[cur], src = S.st.src;

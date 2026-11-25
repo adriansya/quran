@@ -19,6 +19,7 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from arabic_std import PRONOUNS, consonant_key, std  # noqa: E402
+import canon as CANON  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
@@ -86,6 +87,118 @@ def khas(rasm, ar):
     return norm(rasm) != norm(ar) and norm(rasm) != skel(ar)
 
 
+def noun_bw(bw, root, pcpl):
+    """Bentuk kamus isim: ta' marbuthah (bukan ta' maftuhah mushaf), tanpa tanwin, manqush -> ـٍ."""
+    s = bw
+    if s.endswith("at") and root and root[-1] != "t":
+        s = s[:-2] + "ap"
+    s = re.sub(r"(?<=[^FY])[NF]$", "", s)
+    if pcpl and root and root[-1] in "wy" and s.endswith("iy"):
+        s = s[:-2] + "K"
+    return s
+
+
+def _plain(s):
+    return skel(std(s))
+
+
+def norm_stem(st, root=None):
+    """Bentuk dasar jamak/muannats: tanpa i'rab, tanwin, tanda mushaf; hamzah & ta' diseragamkan."""
+    s = re.sub(r"^(.)~", r"\1", st)
+    s = re.sub(r"[\[\]@:\"^;!\-+%]", "", s)  # tanda waqaf/kecil mushaf (hamzah _# dan ۥ ۦ dibiarkan untuk std)
+    s = s.replace(",", "w").replace(".", "y")  # wawu/ya kecil = huruf (النَّبِيِّـۧن)
+    s = re.sub(r"(?<=[&w]u)A$", "", s)  # عُلَمَاؤُا، يَرْجُوا -> tanpa alif
+    s = re.sub(r"uwA$", "uw", s)
+    s = re.sub(r"FY$", "aY", s)  # قُرًى -> قُرَى
+    s = re.sub(r"FA$", "", s)
+    if root and root[-1] in "wy":
+        s = re.sub(r"(?<=[^aiuoA~'>&}#t`])K$", "iy", s)  # manqush: لَيَالٍ -> لَيَالِي، أَيْدٍ -> أَيْدِي
+    s = re.sub(r"[aiuNFK]+$", "", s)
+    s = re.sub(r"[A`][&}>]$", "A'", s)  # آبَاؤُ/آبَائِ/عُلَمَاؤُ -> آبَاء، عُلَمَاء
+    if root and root[-1] != "t":
+        s = re.sub(r"(?<=[aiu])t$", "p", s)  # ta' maftuhah mushaf -> ta' marbuthah
+    s = re.sub(r"^(['>]|_#)aA", "|", s)  # أَالِهَة -> آلِهَة
+    return s
+
+
+def plural_forms(L, lemma_ar):
+    """Daftar bentuk jamak + jenis + wazan dari kemunculan di Al-Qur'an."""
+    out = {}
+    # pangkal jamak salim yang tertulis lengkap (بَنُون) -> bentuk mudhafnya (بَنِي، بَنِيَّ) ikut salim
+    salim_base = {_plain(re.sub(r"(uwn|iyn)$", "", norm_stem(st, L["root"]))) for (st, _), _ in L["plural"].items()
+                  if re.search(r"(uwn|iyn)$", norm_stem(st, L["root"]))}
+    for (st, mp), n in L["plural"].most_common():
+        s = norm_stem(st, L["root"])
+        kind = None
+        lp = _plain(lemma_ar)
+        base_ok = lambda b: _plain(b) == lp or (lp.endswith("ي") and _plain(b) == lp[:-1])  # noqa: E731
+        if re.search(r"(uwn|iyn)$", s):
+            if base_ok(s[:-3]):
+                s, kind = s[:-3] + "uwn", "jamak mudzakkar salim"
+            elif L["root"] and L["root"][-1] == "n":
+                kind = None  # ن huruf akar: jamak taksir (عُيُون)
+            else:
+                s, kind = s[:-3] + "uwn", "mulhaq jamak mudzakkar salim"
+        elif re.search(r"(uw|iy|iY)~?$", s) and (base_ok(re.sub(r"(uw|iy|iY)~?$", "", s)) or _plain(re.sub(r"(uw|iy|iY)~?$", "", s)) in salim_base):
+            label = "jamak mudzakkar salim" if base_ok(re.sub(r"(uw|iy|iY)~?$", "", s)) else "mulhaq jamak mudzakkar salim"
+            s, kind = re.sub(r"(uw|iy|iY)~?$", "uwn", s), label
+        elif False:
+            s, kind = re.sub(r"(uw|iy|iY)$", "uwn", s), "jamak mudzakkar salim"
+        elif re.search(r"(aAt|a`t)$", s):
+            s, kind = re.sub(r"a`t$", "aAt", s), "jamak muannats salim"
+        ar = std(s)
+        if not ar or skel(ar) == skel(lemma_ar):
+            continue
+        w = None
+        if kind is None:
+            kind = "jamak taksir"
+            w = CANON.plural_wazan(s.replace("`", "A"), L["root"])
+        if ar not in out:
+            out[ar] = {"ar": ar, "jenis": kind, "n": 0, **({"wazan": w} if w else {})}
+        out[ar]["n"] += n
+    # لَيَال & لَيَالِي -> satu (bentuk manqush lengkap)
+    for a in list(out):
+        if a + "ي" in out or a + "ِي" in out:
+            b = out.pop(a)
+            (out.get(a + "ي") or out.get(a + "ِي"))["n"] += b["n"]
+    return sorted(out.values(), key=lambda x: -x["n"])[:4]
+
+
+def sharaf_info(k, L, pos, ar, notes):
+    info = {}
+    if pos == "V":
+        form = L["vform"].most_common(1)[0][0] if L["vform"] else "I"
+        w = CANON.verb_wazan(form, k)
+        if w:
+            info["wazan"] = w
+        if L["impf"]:
+            # utamakan bentuk marfu' (يَدْعُو، يَأْتِي، يَرَى), bukan majzum (يَدْعُ، يَأْتِ)
+            ranked = sorted(L["impf"].items(), key=lambda x: (
+                0 if re.search(r"(iy|uw|aY`?|aA)$", x[0]) else 1 if x[0].endswith("u") else 2, -x[1]))
+            cands = [x[0] for x in ranked]
+            info["mudhari"] = std(re.sub(r"^(.)~", r"\1", cands[0]))
+    elif pos in ("N", "ADJ"):
+        pl = plural_forms(L, ar)
+        if pl:
+            info["jamak"] = pl
+        if L["fem"] and not ar.endswith("ة"):
+            f = std(norm_stem(L["fem"].most_common(1)[0][0], L["root"]))
+            if f.endswith("ة") and skel(f) != skel(ar):
+                info["muannats"] = f
+        if L["nums"]["P"] == sum(L["nums"].values()) and k not in L["orig"]:
+            info["catatan"] = "Di Al-Qur'an hanya muncul dalam bentuk jamak."
+    why = [v for v in notes.values() if v and v not in ("madhi di Al-Qur'an",)]
+    plural_only = [CANON.PLURAL_ONLY[o] for o in L["orig"] if o in CANON.PLURAL_ONLY]
+    if plural_only:
+        info["catatan"] = plural_only[0][0].upper() + plural_only[0][1:] + "."
+    if any(v == "dibentuk dari akar & wazan" for v in why) and k not in L["orig"]:
+        info["dibentuk"] = True  # madhi tidak tertulis di Al-Qur'an; dibentuk dari kaidah
+    return info
+
+
+CMAP = {}  # lemma Corpus -> lemma kanonik (diisi di main)
+
+
 def analyse(segs):
     """Ambil lemma, akar, POS dan bentuk kata kerja dari segmen STEM."""
     stem = next(s for s in segs if "STEM" in s[2])
@@ -100,11 +213,24 @@ def analyse(segs):
     if pos == "V":
         form = next((f.strip("()") for f in feats if f.startswith("(") and f.endswith(")")), "I")
     bare = len(segs) == 1
-    return {"lem": lem, "root": get("ROOT:"), "pos": pos, "vform": form, "bare": bare, "stem": stem[0]}
+    orig = lem
+    lem = CMAP.get(lem, lem)
+    return {"lem": lem, "orig": orig, "root": get("ROOT:"), "pos": pos, "vform": form, "bare": bare,
+            "stem": stem[0], "feats": feats}
 
 
 def main():
     corpus = load_corpus()
+    # kanonisasi lemma (fi'il -> madhi; isim -> mufrad mudzakkar)
+    by_lem = collections.defaultdict(list)
+    for segs in corpus.values():
+        st = next(x for x in segs if "STEM" in x[2])
+        lem = next((f[4:] for f in st[2] if f.startswith("LEM:")), None)
+        if lem:
+            pos = next((f[4:] for f in st[2] if f.startswith("POS:")), st[1])
+            by_lem[lem].append((st[0], st[2], pos))
+    cmap, cnotes, _ = CANON.build(by_lem)
+    CMAP.update(cmap)
     chapters = json.loads((RAW / "qurancom" / "chapters.json").read_text())
 
     lemmas = {}  # bw -> info
@@ -127,7 +253,22 @@ def main():
                     "root": a["root"], "pos": collections.Counter(), "vform": collections.Counter(),
                     "mean": collections.Counter(), "core": collections.Counter(),
                     "forms": collections.Counter(), "stems": collections.Counter(), "tr": {},
+                    "orig": collections.Counter(), "plural": collections.Counter(), "fem": collections.Counter(),
+                    "impf": collections.Counter(), "pcpl": 0, "nums": collections.Counter(),
                 })
+                L["orig"][a["orig"]] += 1
+                ft = a["feats"]
+                num = "P" if any(x in ("MP", "FP", "P") for x in ft) else "D" if any(x in ("MD", "FD", "D") for x in ft) else "S"
+                L["nums"][num] += 1
+                if "PCPL" in ft:
+                    L["pcpl"] += 1
+                if a["pos"] in ("N", "ADJ"):
+                    if num == "P":
+                        L["plural"][(a["stem"], "MP" in ft)] += 1
+                    elif num == "S" and ("F" in ft or "FS" in ft):
+                        L["fem"][a["stem"]] += 1
+                elif a["pos"] == "V" and "IMPF" in ft and "3MS" in ft and "PASS" not in ft:
+                    L["impf"][a["stem"]] += 1
                 L["pos"][a["pos"]] += 1
                 if a["vform"]:
                     L["vform"][a["vform"]] += 1
@@ -172,7 +313,10 @@ def main():
         elif kind:  # huruf muqatta'ah dll: pakai tulisan mushaf
             ar = top_form
         else:
-            ar = std(display)
+            ar = std(noun_bw(display, L["root"], L["pcpl"] > 0) if pos in ("N", "ADJ") else display)
+        # bentuk kanonik ini memang tertulis di Al-Qur'an? (kalau dibentuk dari kaidah, tak ada tulisan mushafnya)
+        attested = k in L["orig"] or any(cnotes.get(o) == "madhi di Al-Qur'an" for o in L["orig"])
+        sharaf = sharaf_info(k, L, pos, ar, {o: cnotes.get(o) for o in L["orig"]})
         # tulisan di mushaf (rasm Utsmani): lemma Corpus apa adanya; kata ganti: semua variannya
         if kind == "PRON":
             # varian yang beda tulisan saja (mad, wawu/ya kecil), bukan beda harakat
@@ -184,7 +328,7 @@ def main():
         elif kind:
             rasm = ar
         else:
-            rasm = bw2ar(display)
+            rasm = bw2ar(display) if attested else ar
         item = {
             "id": lid[k],
             "ar": ar,
@@ -201,6 +345,7 @@ def main():
             "mean": means,
             "form": top_form,
             "tr": L["tr"][top_form],
+            **sharaf,
         }
         lemma_list.append(item)
         if L["root"]:

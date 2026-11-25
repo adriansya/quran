@@ -59,7 +59,7 @@ export function preview(c, now = Date.now()) {
 // ---------- state ----------
 const KEY = "kq.v2";
 // Versi nomor kata. v2: kata ganti yang hanya beda tanda mad digabung, nomor bergeser.
-export const DATA_VERSION = 2;
+export const DATA_VERSION = 3; // v3: fi'il -> madhi, isim -> mufrad (jamak & muannats disatukan)
 const blank = () => ({ cards: {}, days: {}, extra: {}, w: {}, scope: "all", npd: 10, src: "freq", sk: { d: 0, n: 0 }, badges: [], t: 0, dv: DATA_VERSION });
 export let st = blank();
 export let canStore = true;
@@ -95,7 +95,7 @@ export function remapIds(map) {
     if (!y || (c.q === 1 && (y.q !== 1 || c.iv > y.iv))) cards[n] = c;
   }
   for (const [old, k] of Object.entries(st.w)) { const n = map[old]; if (n != null) w[n] = (w[n] || 0) + k; }
-  st.cards = cards; st.w = w; st.dv = DATA_VERSION; save();
+  st.cards = cards; st.w = w; st.dv = (st.dv || 1) + 1; save();
 }
 export function save() { st.t = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(st)); } catch { canStore = false; } }
 export function replaceState(s) { st = Object.assign(blank(), s); save(); }

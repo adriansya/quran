@@ -66,3 +66,26 @@ Kemenag via Quran.com #33 / equran.id (terjemah ayat, transliterasi, tafsir)
 
 Hasil: tabel `words` (±77.4 ribu kata), `lemmas`, `roots` → kosakata dikelompokkan per akar/lemma,
 dengan frekuensi kemunculan dan contoh ayat beserta terjemah Kemenag.
+
+## Normalisasi kata dasar (sharaf)
+
+Lemma Quranic Arabic Corpus tidak selalu dalam bentuk kamus. `scripts/canon.py` menormalkannya:
+
+| Jenis | Bentuk kamus | Contoh perbaikan |
+|---|---|---|
+| Fi'il | madhi, dhamir huwa, ma'lum | يُوقِنُ → أَيْقَنَ · بُشِّرَ → بَشَّرَ · عَقَلُوا → عَقَلَ |
+| Isim jamak salim | mufrad | كَافِرُون → كَافِر · مُتَّقِين → مُتَّقٍ · صَالِحَات → صَالِح |
+| Isim jamak taksir | mufrad | أَصْحَاب → صَاحِب · أَلْبَاب → لُبّ · رِجَال → رَجُل |
+| Muannats sifat/isim fa'il/maf'ul | mudzakkar | وَاحِدَة → وَاحِد · مُؤْمِنَة → مُؤْمِن |
+
+- Fi'il: jika bentuk madhi huwa ma'lum tertulis di Al-Qur'an, bentuk itu dipakai. Jika tidak, dibentuk dari
+  akar + wazan oleh `scripts/morph.py` (bentuk I–X, mu'tal, mudha'af, mahmuz). Harakat 'ain bentuk I diambil
+  dari kemunculan madhi, mudhari'/amr, atau tetapan kamus (`VERB_VOWEL`). Divalidasi terhadap 558 fi'il yang
+  madhi-nya tertulis: 91% cocok persis, sisanya beda rasm saja.
+- Isim jamak taksir dipetakan manual ke mufradnya (`BROKEN`); isim jamak tanpa mufrad dari lafaznya
+  (نَاس، نِسَاء، أَبَابِيل) tetap berdiri sendiri dengan catatan (`PLURAL_ONLY`).
+- Homograf (tulisan sama, kata berbeda) tetap dipisah: beda jenis kata (أَعْلَى fi'il / isim tafdhil) atau
+  beda makna yang ditandai Corpus (صَالِح / Nabi Saleh).
+- Info per kata: wazan & mudhari' (fi'il); bentuk jamak + jenisnya (mudzakkar salim, muannats salim,
+  taksir + wazan) & muannats (isim) — semuanya diambil dari kemunculan di Al-Qur'an.
+- Nomor kata berubah tiap versi; `web/data/remap-v1.json`, `remap-v2.json` memindahkan progres pengguna.
