@@ -251,7 +251,7 @@ export async function pageStudy() {
     $("qLab").innerHTML = `Apa artinya? <span class="tag ${kind}">${KIND[kind]}</span>`;
     $("qMeta").textContent = `No. ${C.fmt(L.id + 1)} · ${L.jenis[0]} · ${C.fmt(L.n)}× dalam Al-Qur'an`;
     $("word").textContent = L.ar;
-    $("hint").textContent = L.tr;
+    $("hint").hidden = true; // transliterasi tidak ditampilkan saat menjawab (tetap ada di detail jawaban)
     $("rasm").innerHTML = C.rasmHTML(L);
     $("opts").innerHTML = options(L).map((M, i) => `<button class="opt" type="button" data-id="${M.id}"><span class="k">${"ABCD"[i]}</span><span class="t">${C.esc(answerOf(M))}</span></button>`).join("");
     $("opts").querySelectorAll(".opt").forEach((b) => (b.onclick = () => answer(+b.dataset.id)));

@@ -208,6 +208,8 @@ def sharaf_info(k, L, pos, ar, notes):
                 info["muannats"] = NAW.marfu_ar(f, False)  # فَعْلَاءُ / فُعْلَى
         if L["nums"]["P"] == sum(L["nums"].values()) and k not in L["orig"]:
             info["catatan"] = "Di Al-Qur'an hanya muncul dalam bentuk jamak."
+    if k in BENTUK:
+        info["catatan"] = "Bentuk: " + BENTUK[k] + "."
     why = [v for v in notes.values() if v and v not in ("madhi di Al-Qur'an",)]
     plural_only = [CANON.PLURAL_ONLY[o] for o in L["orig"] if o in CANON.PLURAL_ONLY]
     if plural_only:
@@ -218,6 +220,25 @@ def sharaf_info(k, L, pos, ar, notes):
 
 
 VOWEL_I = {}
+# Isim maushul & isyarah mabni: tiap bentuk adalah kata tersendiri (Corpus menyatukannya dalam satu lemma).
+SPLIT = {
+    "{l~a*iY": [(r"\*iyn", "{l~a*iyna"), (r"\*aAn|\*ayon", "{l~a*aAni"), (r"a`(ti|_#i)", "{l~a`tiY"),
+                (r"l~ati", "{l~atiY"), (r"", "{l~a*iY")],
+    "*a`lik": [(r"^til", "tiloka"), (r"", "*a`lik")],
+    "ha`*aA": [(r"&ulaA", "ha`&ulaA'i"), (r"\*ihi", "ha`*ihi"), (r"", "ha`*aA")],
+}
+BENTUK = {
+    "{l~a*iY": "mufrad mudzakkar", "{l~a*iyna": "jamak mudzakkar (mufradnya الَّذِي)",
+    "{l~a*aAni": "mutsanna mudzakkar (manshub/majrur: اللَّذَيْنِ)", "{l~atiY": "mufrad muannats",
+    "{l~a`tiY": "jamak muannats (juga اللَّائِي)", "{l~a`^_#iY": "jamak muannats (juga اللَّاتِي)",
+    "ha`*aA": "mufrad mudzakkar, dekat", "ha`*ihi": "mufrad muannats, dekat",
+    "ha`&ulaA'i": "jamak (mudzakkar & muannats), dekat", "ha`*a`n": "mutsanna mudzakkar, dekat",
+    "*a`lik": "mufrad mudzakkar, jauh (ذٰلِكُمْ، ذٰلِكُمَا dengan kaf khithab)", "tiloka": "mufrad muannats, jauh",
+    ">uwla`^}ik": "jamak, jauh",
+    "*a`nik": "mutsanna mudzakkar, jauh", "tilokum": "mufrad muannats, jauh (kaf khithab jamak)",
+    "ha`tayon": "mutsanna muannats, dekat (marfu': هَاتَانِ)", ">uwlaA^'": "jamak (أُولَاءِ), tanpa kaf khithab",
+    "hunaA": "isyarah tempat, dekat (di sini)", "ha`ka*aA": "isyarah dengan kaf tasybih (seperti ini)",
+}
 CMAP = {}  # lemma Corpus -> lemma kanonik (diisi di main)
 
 
@@ -237,6 +258,9 @@ def analyse(segs):
     bare = len(segs) == 1
     orig = lem
     lem = CMAP.get(lem, lem)
+    if lem in SPLIT:
+        clean = re.sub(r"[\[\]@^]", "", stem[0])
+        lem = next(key for rx, key in SPLIT[lem] if re.search(rx, clean))
     has_al = any("Al+" in f for s in segs for f in s[2])
     return {"lem": lem, "orig": orig, "root": get("ROOT:"), "pos": pos, "vform": form, "bare": bare,
             "stem": stem[0], "feats": feats, "al": has_al}

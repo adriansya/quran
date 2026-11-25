@@ -20,9 +20,10 @@ BW = {
 VOWELS = "aiuoFNK~"
 # Kata yang dalam ejaan standar tetap memakai alif kecil (tanpa alif penuh).
 EXACT = {
-    "ha`*aA": "هٰذَا", "ha`*a`n": "هٰذَان", "ha`&ulaA^'": "هٰؤُلَاء", "ha`ka*aA": "هٰكَذَا",
-    "*a`lik": "ذٰلِك", "la`kin": "لٰكِن", "la`kin~": "لٰكِنّ", "<ila`h": "إِلٰه",
-    ">uwla`^}ik": "أُولٰئِك", "{d~a`ra`#o": "ادَّارَأَ", "{mora>at": "امْرَأَة", "{vonayon": "اثْنَانِ", "{vonatayon": "اثْنَتَانِ", "r~aHoma`n": "رَحْمٰن", "{ll~ah": "اللّٰه", "{ll~ahum~a": "اللّٰهُمَّ",
+    "ha`*aA": "هٰذَا", "ha`*a`n": "هٰذَانِ", "ha`&ulaA^'": "هٰؤُلَاء", "ha`ka*aA": "هٰكَذَا",
+    "*a`lik": "ذٰلِكَ", "*a`nik": "ذَانِكَ", "tilokum": "تِلْكُمْ", "ha`tayon": "هَاتَيْنِ", ">uwlaA^'": "أُولَاءِ", "tiloka": "تِلْكَ", "ha`*ihi": "هٰذِهِ", "ha`&ulaA'i": "هٰؤُلَاءِ",
+    "{l~a*iyna": "الَّذِينَ", "{l~a*aAni": "اللَّذَانِ", "{l~atiY": "الَّتِي", "{l~a`tiY": "اللَّاتِي", "la`kin": "لٰكِن", "la`kin~": "لٰكِنّ", "<ila`h": "إِلٰه",
+    ">uwla`^}ik": "أُولٰئِكَ", "{d~a`ra`#o": "ادَّارَأَ", "{mora>at": "امْرَأَة", "{vonayon": "اثْنَانِ", "{vonatayon": "اثْنَتَانِ", "r~aHoma`n": "رَحْمٰن", "{ll~ah": "اللّٰه", "{ll~ahum~a": "اللّٰهُمَّ",
 }
 # Konsonan yang menentukan identitas kata ganti/huruf (tanpa harakat & tanda mushaf).
 CONS = set("'><&}AbptvjHxd*rzs$SDTZEgfqklmnhwYy")
