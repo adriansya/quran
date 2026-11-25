@@ -105,6 +105,22 @@ def template(bw, root):
 
 COLOR_DEFECT = {"Hwy", "byD", "swd", "Hmr", "Sfr", "xDr", "zrq", "bkm", "Erj", "Emy", "kmh", "brS", "$yb", "Ejf", "Smm",
                 "btr", "glf", "Ewr", "Erb", "xrs"}
+# Zharaf: jenis (zaman/makan) + tulisan sesuai pemakaiannya (manshub 'ala azh-zharfiyyah, atau mabni).
+ZHARAF = {
+    # zharaf zaman
+    "qabol": ("zharaf_zaman", "قَبْلَ"), "baEod": ("zharaf_zaman", "بَعْدَ"), "<i*aA": ("zharaf_zaman", "إِذَا"),
+    "<i*": ("zharaf_zaman", "إِذْ"), "lam~aA": ("zharaf_zaman", "لَمَّا"), "yawoma}i*": ("zharaf_zaman", "يَوْمَئِذٍ"),
+    ">abadFA": ("zharaf_zaman", "أَبَدًا"), "kul~amaA": ("zharaf_zaman", "كُلَّمَا"), "_#a`n": ("zharaf_zaman", "الْآنَ"),
+    ">aSiyl": ("zharaf_zaman", "أَصِيلًا"), "bukorap": ("zharaf_zaman", "بُكْرَةً"), ">aHoqaAb": ("zharaf_zaman", "أَحْقَابًا"),
+    # zharaf makan
+    "bayon": ("zharaf_makan", "بَيْنَ"), "Eind": ("zharaf_makan", "عِنْدَ"), "maE": ("zharaf_makan", "مَعَ"),
+    "waraA^'": ("zharaf_makan", "وَرَاءَ"), "laday": ("zharaf_makan", "لَدَى"), "ladaY": ("zharaf_makan", "لَدَى"),
+    "$aTor": ("zharaf_makan", "شَطْرَ"), "qibal": ("zharaf_makan", "قِبَلَ"), "vam~": ("zharaf_makan", "ثَمَّ"),
+    "hunaAlik": ("zharaf_makan", "هُنَالِكَ"), ">amaAm": ("zharaf_makan", "أَمَامَ"), "duwn": ("zharaf_makan", "دُونَ"),
+    "taHot": ("zharaf_makan", "تَحْتَ"), "fawoq": ("zharaf_makan", "فَوْقَ"), "xalof": ("zharaf_makan", "خَلْفَ"),
+    "Hawol": ("zharaf_makan", "حَوْلَ"), "tiloqaA^'": ("zharaf_makan", "تِلْقَاءَ"), "Hayov": ("zharaf_makan", "حَيْثُ"),
+    "ladun": ("zharaf_makan", "لَدُنْ"),
+}
 ADAD_ROOTS = {"wHd", "Ahd", "vny", "vlv", "rbE", "xms", "sds", "stt", "sbE", "vmn", "tsE", "E$r", "mAy", "Alf"}
 ALAT = {"miSobaAH", "mifotaH", "mikoyaAl", "miyzaAn", "miqomaE", "mivoqaAl"}
 NOT_MAKAN = {"maEo$ar", "mayosir", "maroHab"}
@@ -129,6 +145,8 @@ def classify(k, pos, root, feats, means, form, verb_vowel=None):
         if root and len(root) == 4:
             return "f_rubai"
         return "f_mujarrad" if form in (None, "I") else "f_mazid"
+    if k in ZHARAF:  # persis (homograf bernomor seperti إِذَا fuja'iyyah / مَعَ harf jar tidak ikut)
+        return ZHARAF[k][0]
     if pos == "INTG" and base in ISTIFHAM_ISIM:
         return "istifham_isim"
     if pos in POS_ISIM:

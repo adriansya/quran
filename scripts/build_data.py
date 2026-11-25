@@ -365,7 +365,10 @@ def main():
         jk = NAW.classify(k, pos, L["root"], L["feat"], means, L["vform"].most_common(1)[0][0] if L["vform"] else None,
                           VOWEL_I.get(L["root"]))
         mamnu = False
-        if pos in ("N", "ADJ", "PN") and not kind:
+        zh = NAW.ZHARAF.get(k)
+        if zh:
+            ar_plain, ar = ar, zh[1]  # zharaf ditulis sesuai pemakaiannya (قَبْلَ، فَوْقَ، حَيْثُ)
+        elif pos in ("N", "ADJ", "PN") and not kind:
             F = L["feat"]
             rule = NAW.mamnu_by_rule(ar, noun_bw(display, L["root"], L["pcpl"] > 0), L["root"], jk, pos)
             if F["tan"]:
@@ -380,7 +383,7 @@ def main():
             mamnu = not munsarif
             ar_plain = ar
             ar = NAW.marfu_ar(ar, munsarif)
-        else:
+        if not zh and not (pos in ("N", "ADJ", "PN") and not kind):
             ar_plain = ar
         # bentuk kanonik ini memang tertulis di Al-Qur'an? (kalau dibentuk dari kaidah, tak ada tulisan mushafnya)
         attested = k in L["orig"] or any(cnotes.get(o) == "madhi di Al-Qur'an" for o in L["orig"])

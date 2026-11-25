@@ -107,6 +107,9 @@ BROKEN = {
     "bunaY~": "{bon", "rab~a`niy~in": "rab~aAniy~", "S~a`bi_#iyn": "SaAbi}", "maroDaAt": "maroDaAp", "siniyn": "sanap", "banaAt": "binot", ">a$otaAt": "$at~", "rawaAsiY": "raAsiyap",
     "rawa`siY": "raAsiyap", ">asobaAT": "siboT",
 }
+# Varian tulisan kata yang sama (semua jenis kata).
+ALIAS = {"laday": "ladaY"}
+
 # Isim jamak / jamak tanpa mufrad dari lafaznya: tetap berdiri sendiri, diberi keterangan.
 PLURAL_ONLY = {
     "n~aAs": "isim jamak (tidak punya mufrad dari lafaznya)",
@@ -210,6 +213,9 @@ def build(occ_by_lemma):
             c, why = verb_canonical(lem, occ_by_lemma[lem], d["root"], d["form"])
             if c != base:
                 canon[lem], notes[lem] = c, why
+            continue
+        if lem in ALIAS:
+            canon[lem], notes[lem] = ALIAS[lem], "varian tulisan"
             continue
         if d["pos"] not in ("N", "ADJ"):
             continue
