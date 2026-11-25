@@ -89,3 +89,15 @@ Lemma Quranic Arabic Corpus tidak selalu dalam bentuk kamus. `scripts/canon.py` 
 - Info per kata: wazan & mudhari' (fi'il); bentuk jamak + jenisnya (mudzakkar salim, muannats salim,
   taksir + wazan) & muannats (isim) — semuanya diambil dari kemunculan di Al-Qur'an.
 - Nomor kata berubah tiap versi; `web/data/remap-v1.json`, `remap-v2.json` memindahkan progres pengguna.
+
+## Bentuk kamus (marfu' nakirah) & jenis kata
+
+- Isim ditulis marfu' nakirah seperti kamus (`scripts/naw.py`): munsarif bertanwin (كِتَابٌ، رَبٌّ),
+  ghairu munsharif berdhammah (إِبْرَاهِيمُ، أَكْبَرُ، عُلَمَاءُ، ذِكْرَى), manqush/maqshur (مُتَّقٍ، هُدًى، نَوَاصٍ).
+  Penentuan: bukti di Al-Qur'an dulu (bentuk bertanwin = munsarif; 'alam majrur berfathah = mamnu'),
+  lalu kaidah: أَفْعَل sifat/tafdhil, فَعْلَان sifat, alif ta'nith mamdudah/maqshurah, shighah muntahal jumu',
+  'alam 'ajam/muannats. Isim mabni (dhamir, isyarah, maushul, zharaf) tidak diberi akhiran.
+- Jenis kata memakai istilah Arab + padanan Indonesia: fi'il tsulatsi mujarrad/mazid, ruba'i, naqish, jamid;
+  isim fa'il, maf'ul, masdar, tafdhil, shifah musyabbahah, shighah mubalaghah, isim makan/zaman, alat, nisbah,
+  'adad, 'alam, dhamir, isyarah, maushul, zharaf; harf jar, 'athf, nafy, nashb, mashdari, syarth, dst.
+- Nomor kata v3 -> v4 dipetakan lewat lokasi tiap kata di Al-Qur'an (`remap-v3.json`).

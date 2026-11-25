@@ -280,3 +280,5 @@ details.how ul { padding-left: 18px; margin: 6px 0; }
 .wz { font-size: 20px; color: var(--accent); }
 .sharaf dd { display: flex; flex-wrap: wrap; gap: 2px 14px; align-items: baseline; }
 @media (max-width: 420px) { .vitem { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 8px; padding: 8px 10px; } .vitem .rank { min-width: 0; padding: 3px 4px; font-size: 13px; } }
+.pill.jenis .ar { font-size: 15px; line-height: 1; }
+.seg button .ar { font-size: 15px; line-height: 1; margin-left: 2px; }

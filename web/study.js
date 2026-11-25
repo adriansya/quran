@@ -197,7 +197,7 @@ export async function pageStudy() {
       <h3>Kata baru per hari</h3>
       <div class="seg" id="npd">${[5, 10, 20, 30].map((n) => `<button data-v="${n}">${n}</button>`).join("")}</div>
       <h3>Jenis kata</h3>
-      <div class="seg" id="scope"><button data-v="all">Semua</button><button data-v="f">Fi'il</button><button data-v="i">Isim</button><button data-v="h">Harf</button></div>
+      <div class="seg" id="scope"><button data-v="all">Semua</button><button data-v="i" title="kata benda">Isim <span class="ar">اسْمٌ</span></button><button data-v="f" title="kata kerja">Fi'il <span class="ar">فِعْلٌ</span></button><button data-v="h" title="partikel">Harf <span class="ar">حَرْفٌ</span></button></div>
       <details class="how"><summary>Cara kerja hafalannya</summary><ul class="small">
         <li>Pilih arti yang benar (A–D). Salah atau “Saya belum tahu” → kartu dinilai <b>Lagi</b> dan muncul lagi 1 menit kemudian.</li>
         <li>Kalau benar, nilai sendiri: <b>Sulit</b>, <b>Baik</b>, atau <b>Mudah</b>. Jarak ulangan berikutnya tertulis di tiap tombol.</li>
@@ -232,7 +232,7 @@ export async function pageStudy() {
   $("juz").onchange = (e) => setSrc("j" + e.target.value);
   $("hal").onchange = (e) => setSrc(e.target.value);
   $("npd").onclick = (e) => { if (!e.target.dataset.v) return; S.st.npd = +e.target.dataset.v; S.save(); syncSide(); updateCounts(); if (!cur && !drill) next(); };
-  $("scope").onclick = (e) => { if (!e.target.dataset.v) return; S.st.scope = e.target.dataset.v; S.save(); syncSide(); if (!answered && !drill) next(); };
+  $("scope").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; S.st.scope = b.dataset.v; S.save(); syncSide(); if (!answered && !drill) next(); };
 
   function updateCounts() {
     const c = counts(), d = S.dayRec();
@@ -249,7 +249,7 @@ export async function pageStudy() {
     ["card", "opts"].forEach((x) => ($(x).hidden = false));
     $("card").classList.remove("in"); void $("card").offsetWidth; $("card").classList.add("in");
     $("qLab").innerHTML = `Apa artinya? <span class="tag ${kind}">${KIND[kind]}</span>`;
-    $("qMeta").textContent = `No. ${C.fmt(L.id + 1)} · ${KELAS[L.k]}${L.homo ? " · " + L.posId : ""} · ${C.fmt(L.n)}× dalam Al-Qur'an`;
+    $("qMeta").textContent = `No. ${C.fmt(L.id + 1)} · ${L.jenis[0]} · ${C.fmt(L.n)}× dalam Al-Qur'an`;
     $("word").textContent = L.ar;
     $("hint").textContent = L.tr;
     $("rasm").innerHTML = C.rasmHTML(L);
@@ -276,7 +276,8 @@ export async function pageStudy() {
     // detail kata
     $("det").innerHTML = `
       <dt>Arti</dt><dd><b>${C.esc(L.mean.join("; "))}</b></dd>
-      <dt>Kata dasar</dt><dd><a href="#/kata/${L.id}" class="ar dar">${L.ar}</a> <span class="muted">${C.esc(L.tr)} · ${L.posId}${L.vform ? " " + L.vform : ""}</span></dd>
+      <dt>Kata dasar</dt><dd><a href="#/kata/${L.id}" class="ar dar">${L.ar}</a> <span class="muted">${C.esc(L.tr)}</span></dd>
+      <dt>Jenis kata</dt><dd>${C.esc(L.jenis[0])} · <span class="ar dar">${L.jenis[1]}</span> <span class="muted small">(${C.esc(L.jenis[2])})</span></dd>
       ${L.rasm ? `<dt>Tulisan mushaf</dt><dd class="rasm-dd"><span class="ar">${L.rasm}</span>${L.rasmX ? ' <span class="pill khas">ejaan khas mushaf</span>' : ""}</dd>` : ""}
       ${C.sharafRows(L)}
       <dt>Akar</dt><dd>${L.root ? `<span class="ar dar">${C.rootSpaced(L.root)}</span>` : "—"} <span class="muted">· muncul ${C.fmt(L.n)}×</span></dd>`;

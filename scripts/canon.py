@@ -100,7 +100,11 @@ BROKEN = {
     "muSoTafayon": "muSoTafaY`", "mufotaraya`t": "mufotaraY", "Saduqa`t": "Saduqap",
     "HaADiriY": "HaADir", "EaAbiriY": "EaAbir", "muqoniEiY": "muqoniE", "muholikiY": "muholik",
     "muHil~iY": "muHil~", "ZaAlimiY^": "ZaAlim",
-    "bunaY~": "{bon", "siniyn": "sanap", "banaAt": "binot", ">a$otaAt": "$at~", "rawaAsiY": "raAsiyap",
+    "HadaA^}iq": "Hadiyqap", "fawa`kih": "fa`kihap", "$amaA^}il": "$imaAl", "fura`daY`": "farod",
+    "kusaAlaY`": "kasolaAn", "maEa`yi$": "maEiy$ap", "m~avaAniY": "mavonaY`", ">aqaAwiyl": "qawol",
+    "SayaASiy": "SiySiyap", "d~awaA^}ir": "daA^}irap", "maEaA*iyr": "maEo*irap", "maraAfiq": "mirofaq",
+    "n~awa`SiY": "naASiyap", "t~araAqiY": "taroquwap", "naD~aAxataAn": "naD~aAxap",
+    "bunaY~": "{bon", "rab~a`niy~in": "rab~aAniy~", "S~a`bi_#iyn": "SaAbi}", "maroDaAt": "maroDaAp", "siniyn": "sanap", "banaAt": "binot", ">a$otaAt": "$at~", "rawaAsiY": "raAsiyap",
     "rawa`siY": "raAsiyap", ">asobaAT": "siboT",
 }
 # Isim jamak / jamak tanpa mufrad dari lafaznya: tetap berdiri sendiri, diberi keterangan.

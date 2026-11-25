@@ -45,9 +45,25 @@ function sharafRows(L) {
   if (L.mudhari) r.push(["Mudhari'", `<span class="ar dar">${L.mudhari}</span>`]);
   if (L.jamak) r.push(["Jamak", L.jamak.map((j) => `<span class="jm"><span class="ar dar">${j.ar}</span> <span class="muted small">${esc(j.jenis)}</span>${j.wazan ? ` <span class="muted small">wazan</span> <span class="ar wz">${j.wazan}</span>` : ""}</span>`).join("")]);
   if (L.muannats) r.push(["Muannats", `<span class="ar dar">${L.muannats}</span>`]);
+  if (L.mamnu) r.push(["I'rab", `<span class="small">Ghairu munsharif <span class="ar">(مَمْنُوعٌ مِنَ الصَّرْفِ)</span>: tidak menerima tanwin; majrurnya dengan fathah.</span>`]);
   if (L.catatan) r.push(["Catatan", `<span class="small">${esc(L.catatan)}</span>`]);
   if (L.dibentuk) r.push(["Catatan", `<span class="small muted">Bentuk madhi ini tidak tertulis di Al-Qur'an; disusun dari akar dan wazannya.</span>`]);
   return r.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+}
+// Pilihan filter jenis kata: kelas utama (isim/fi'il/harf) lalu jenis rinci yang ada di data.
+const KELAS_AR = { i: ["Isim", "اسْمٌ", "kata benda"], f: ["Fi'il", "فِعْلٌ", "kata kerja"], h: ["Harf", "حَرْفٌ", "partikel"] };
+function jenisOptions() {
+  const by = {};
+  for (const L of LEMMAS) (by[L.k] ||= new Map()).set(L.jk, [L.jenis, ((by[L.k].get(L.jk) || [])[1] || 0) + 1]);
+  let h = `<option value="">Semua jenis kata</option>`;
+  for (const k of ["i", "f", "h"]) {
+    const [lat, , id] = KELAS_AR[k];
+    h += `<option value="k:${k}">${lat} — semua (${id})</option><optgroup label="${lat}">`;
+    for (const [jk, [j, n]] of [...(by[k] || new Map())].sort((a, b) => b[1][1] - a[1][1]))
+      h += `<option value="${jk}">${esc(j[0])} · ${esc(j[2])} (${n})</option>`;
+    h += `</optgroup>`;
+  }
+  return h;
 }
 const chapterName = (n) => CHAPTERS[n - 1]?.name ?? n;
 
@@ -55,7 +71,7 @@ function lemmaRow(L) {
   return `<a class="vitem" href="#/kata/${L.id}">
     <span class="rank" title="Urutan frekuensi: 1 = paling sering muncul">${fmt(L.id + 1)}</span>
     <span><div class="mean">${esc(L.mean.slice(0, 2).join("; ") || "—")}</div>
-      <div class="meta">${esc(L.tr)} · ${L.posId}${L.vform ? " (" + L.vform + ")" : ""} · ${fmt(L.n)}×</div></span>
+      <div class="meta">${esc(L.tr)} · ${esc(L.jenis[0])} · ${fmt(L.n)}×</div></span>
     <span class="ar-col"><span class="ar-stack"><span class="ar">${L.ar}</span>${L.rasm ? `<span class="ar rasm-sm" title="tulisan mushaf">${L.rasm}</span>` : ""}</span><span class="dot s${level(L.id)}" title="status hafalan"></span></span>
   </a>`;
 }
@@ -114,9 +130,7 @@ function pageVocab(q) {
   <p class="muted">${fmt(LEMMAS.length)} kata dasar (lemma), diurutkan dari yang paling sering muncul. Lihat juga <a href="#/akar">daftar akar kata</a>.</p>
   <div class="toolbar">
     <input id="q" type="search" placeholder="Cari arti, latin, atau Arab…" value="${esc(state.q)}" autocomplete="off">
-    <select id="pos"><option value="">Semua jenis</option>
-      <option value="N">Kata benda</option><option value="V">Kata kerja</option><option value="ADJ">Kata sifat</option>
-      <option value="PN">Nama diri</option><option value="PRON">Kata ganti</option><option value="P">Preposisi</option><option value="X">Partikel lain</option></select>
+    <select id="pos" aria-label="Jenis kata">${jenisOptions()}</select>
     <select id="st"><option value="">Semua status</option><option value="0">Belum dipelajari</option><option value="1">Sedang dipelajari</option><option value="2">Sudah lulus</option></select>
   </div>
   <div id="count" class="muted small"></div>
@@ -124,12 +138,11 @@ function pageVocab(q) {
   <div class="row" style="justify-content:center;margin-top:12px"><button id="more" class="btn">Tampilkan lebih banyak</button></div>`;
   const $ = (id) => document.getElementById(id);
   $("pos").value = state.pos; $("st").value = state.st;
-  const MAIN = new Set(["N", "V", "ADJ", "PN", "PRON", "P"]);
   function filtered() {
     const qs = state.q.trim().toLowerCase(), qa = stripAr(qs);
     const isAr = /[؀-ۿ]/.test(qs);
     return LEMMAS.filter((L) => {
-      if (state.pos && (state.pos === "X" ? MAIN.has(L.pos) : L.pos !== state.pos)) return false;
+      if (state.pos && (state.pos.startsWith("k:") ? L.k !== state.pos.slice(2) : L.jk !== state.pos)) return false;
       if (state.st !== "") { const lv = level(L.id); if (state.st === "2" ? lv < 2 : String(Math.min(lv, 2)) !== state.st) return false; }
       if (!qs) return true;
       if (isAr) return stripAr(L.ar).includes(qa) || stripAr(L.form).includes(qa) || (L.rasm && stripAr(L.rasm).includes(qa)) || (L.root && L.root.includes(qa.replace(/\s/g, "")));
@@ -179,7 +192,7 @@ async function pageLemma(id) {
   $app.innerHTML = `
   <div class="lemma-head">
     <div>
-      <div class="row"><span class="pill accent">${L.posId}${L.vform ? " · bentuk " + L.vform : ""}</span><span class="pill rankpill">No. ${fmt(id + 1)} terbanyak</span></div>
+      <div class="row"><span class="pill accent jenis" title="${esc(L.jenis[2])}">${esc(L.jenis[0])} · <span class="ar">${L.jenis[1]}</span> · ${esc(L.jenis[2])}</span><span class="pill rankpill">No. ${fmt(id + 1)} terbanyak</span></div>
       <div class="meanings">${esc(L.mean.join("; ") || "—")}</div>
       <div class="muted">${esc(L.tr)} · muncul <b>${fmt(L.n)}×</b> · akar ${R ? `<a href="#/akar/${encodeURIComponent(R.bw)}" class="ar" style="font-size:20px">${rootSpaced(L.root)}</a>` : "—"}</div>
       ${sharafRows(L) ? `<dl class="det sharaf">${sharafRows(L)}</dl>` : ""}

@@ -22,7 +22,7 @@ VOWELS = "aiuoFNK~"
 EXACT = {
     "ha`*aA": "هٰذَا", "ha`*a`n": "هٰذَان", "ha`&ulaA^'": "هٰؤُلَاء", "ha`ka*aA": "هٰكَذَا",
     "*a`lik": "ذٰلِك", "la`kin": "لٰكِن", "la`kin~": "لٰكِنّ", "<ila`h": "إِلٰه",
-    ">uwla`^}ik": "أُولٰئِك", "{d~a`ra`#o": "ادَّارَأَ", "{mora>at": "امْرَأَة", "r~aHoma`n": "رَحْمٰن", "{ll~ah": "اللّٰه", "{ll~ahum~a": "اللّٰهُمَّ",
+    ">uwla`^}ik": "أُولٰئِك", "{d~a`ra`#o": "ادَّارَأَ", "{mora>at": "امْرَأَة", "{vonayon": "اثْنَانِ", "{vonatayon": "اثْنَتَانِ", "r~aHoma`n": "رَحْمٰن", "{ll~ah": "اللّٰه", "{ll~ahum~a": "اللّٰهُمَّ",
 }
 # Konsonan yang menentukan identitas kata ganti/huruf (tanpa harakat & tanda mushaf).
 CONS = set("'><&}AbptvjHxd*rzs$SDTZEgfqklmnhwYy")
@@ -95,6 +95,8 @@ def std(bw):
     # ya di tengah kata selalu bertitik; ى setelah kasrah di akhir kata ditulis ي (فِي، الَّذِي)
     s = re.sub(r"Y(?=.)", "y", s)
     s = re.sub(r"iY$", "iy", s)
+    s = re.sub(r"oY$", "oy", s)
+    s = re.sub(r"(?<=i)'(?=o)", "}", s)  # hamzah sukun setelah kasrah di atas ya': رِئْي  # ya' sesudah sukun: خِزْي، وَحْي، رَأْي
     return "".join(BW.get(c, c) for c in s)
 
 
