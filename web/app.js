@@ -1,7 +1,6 @@
 // Kosakata Al-Qur'an — single-page app statis (tanpa build step).
 const $app = document.getElementById("app");
 const TOTAL_WORDS = 77429;
-const AUDIO = "https://audio.qurancdn.com/wbw/";
 
 // ---------- data ----------
 const cache = new Map();
@@ -34,8 +33,6 @@ const pct = (x) => (x * 100).toFixed(1).replace(".", ",") + "%";
 const fmt = (n) => n.toLocaleString("id-ID");
 const stripAr = (s) => s.replace(/[ً-ٰٟۖ-ۭـ]/g, "").replace(/[ٱأإآ]/g, "ا").replace(/ى/g, "ي");
 const rootSpaced = (r) => (r ? [...r].join(" ") : "—");
-const audioUrl = (loc) => { const [s, a, w] = loc.split(":"); return `${AUDIO}${s.padStart(3, "0")}_${a.padStart(3, "0")}_${w.padStart(3, "0")}.mp3`; };
-const play = (loc) => { new Audio(audioUrl(loc)).play().catch(() => {}); };
 // Tulisan di mushaf (rasm Utsmani) bila berbeda dari ejaan standar.
 const rasmHTML = (L) => (L.rasm ? `<span class="muted">Di mushaf:</span> <span class="ar">${L.rasm}</span>${L.rasmX ? ' <span class="pill khas">ejaan khas mushaf</span>' : ""}` : "");
 // Info sharaf: wazan & mudhari' (fi'il), jamak & muannats (isim), catatan — sebagai pasangan <dt>/<dd>.
@@ -199,7 +196,6 @@ async function pageLemma(id) {
       ${L.homo ? `<div class="small homo">Tulisannya sama dengan kata lain (homograf): ${L.homo.map((h) => `<a href="#/kata/${h}">${esc(LEMMAS[h].mean[0] || "")}</a>`).join(", ")}</div>` : ""}
       <div class="muted small">Menguasai ${id + 1} kata teratas s.d. kata ini = ${pct(cum / TOTAL_WORDS)} kata Al-Qur'an.</div>
       <div class="row" style="margin-top:12px">
-        <button class="btn sm" id="play">▶ Dengarkan</button>
         <button class="btn sm ${s ? "" : "primary"}" id="learn">${s ? (level(id) === 3 ? "✓ Dikuasai" : level(id) === 2 ? "✓ Lulus · ulang " + S.fmtT(Math.max(0, s.due - Date.now())) + " lagi" : "Sedang dipelajari") : "+ Pelajari sekarang"}</button>
         ${s ? "" : `<button class="btn sm" id="known">Sudah hafal</button>`}
         ${s ? `<button class="btn sm" id="reset">Atur ulang</button>` : ""}
@@ -212,7 +208,6 @@ async function pageLemma(id) {
   <div id="verses"></div>
   <div class="row" style="justify-content:center;margin-top:12px"><button id="more" class="btn">Ayat lainnya</button></div>`;
   const $ = (x) => document.getElementById(x);
-  $("play").onclick = () => play(O[0]);
   $("learn").onclick = () => { if (!S.card(id)) { S.st.cards[id] = { q: 0, s: 0, iv: 0, ef: 2.5, due: Date.now(), r: 0, l: 0 }; S.save(); location.hash = "#/latihan"; } };
   if ($("known")) $("known").onclick = () => { S.st.cards[id] = { q: 1, s: 0, iv: 30, ef: 2.5, due: S.dayStart(S.today() + 30), r: 1, l: 0 }; S.save(); pageLemma(id); };
   if ($("reset")) $("reset").onclick = () => { delete S.st.cards[id]; S.save(); pageLemma(id); };
@@ -320,7 +315,7 @@ async function route() {
   for (const sn in M) M[sn].p.forEach((p, i) => { if (!PAGE_LABEL[p]) PAGE_LABEL[p] = `${CHAPTERS[sn - 1].name} ${i + 1}`; });
   const fat = await surah(1);
   initStudy({
-    app: $app, LEMMAS, CHAPTERS, TOTAL_WORDS, occ, mushaf, verseHTML, esc, fmt, pct, rootSpaced, play,
+    app: $app, LEMMAS, CHAPTERS, TOTAL_WORDS, occ, mushaf, verseHTML, esc, fmt, pct, rootSpaced,
     pageLabel: (p) => PAGE_LABEL[p] || "", rasmHTML, sharafRows, surahLemmas: { 1: [...new Set(fat.flatMap((v) => v.w.map((w) => w[3])))] },
   });
   window.addEventListener("hashchange", route);

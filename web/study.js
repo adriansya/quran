@@ -291,7 +291,6 @@ export async function pageStudy() {
       if (groups.length >= 40) break;
     }
     cxList = groups; cxi = 0; showCx();
-    C.play(sorted[0].loc);
     updateCounts();
   }
   async function showCx() {

@@ -4,7 +4,7 @@ Web app untuk belajar kosakata Al-Qur'an dari kata yang paling sering muncul.
 **300 lemma teratas mencakup ±74% dari 77.429 kata Al-Qur'an**, dan 1.000 lemma mencakup ±89%.
 
 Fitur:
-- **Latihan (SRS ala Anki)**: soal pilihan ganda A–D, lalu nilai sendiri Lagi/Sulit/Baik/Mudah. Kartu baru melewati langkah 1 dan 10 menit, lalu jaraknya dikali faktor kemudahan. Kata baru bisa diambil dari kata yang **paling sering** muncul atau **urut mushaf** per juz/halaman, dan bisa difilter Fi'il/Isim/Harf. Setiap jawaban menampilkan arti, kata dasar, akar, audio, dan konteks ayat dengan terjemah Kemenag. Ada juga latihan kata yang sering lupa, kuis cepat, dan pintasan keyboard.
+- **Latihan (SRS ala Anki)**: soal pilihan ganda A–D, lalu nilai sendiri Lagi/Sulit/Baik/Mudah. Kartu baru melewati langkah 1 dan 10 menit, lalu jaraknya dikali faktor kemudahan. Kata baru bisa diambil dari kata yang **paling sering** muncul atau **urut mushaf** per juz/halaman, dan bisa difilter Fi'il/Isim/Harf. Setiap jawaban menampilkan arti, kata dasar, akar, dan konteks ayat dengan terjemah Kemenag. Ada juga latihan kata yang sering lupa, kuis cepat, dan pintasan keyboard.
 - **Gamifikasi**: streak harian, target harian, lencana pencapaian, dan "% kata Al-Qur'an yang kamu pahami", total maupun per juz.
 - **Statistik**: aktivitas 30 hari, jadwal ulangan, pemahaman per juz, serta cadangan dan pemulihan progres (file JSON).
 - **Kosakata**: 4.871 kata dasar (lemma) diurutkan berdasarkan frekuensi, dengan pencarian Arab/latin/arti.
