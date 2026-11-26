@@ -219,6 +219,44 @@ def sharaf_info(k, L, pos, ar, notes):
     return info
 
 
+def corpus_stats(order, occ, mushaf, chapters, surah_out):
+    """Agregat untuk dashboard: per juz (kemunculan, kata dasar, kata dasar baru) & Makkiyah/Madaniyah."""
+    place = {c["id"]: c["revelation_place"] for c in chapters}
+    lid = {k: i for i, k in enumerate(order)}
+    juz = [{"j": j, "tok": 0, "lem": set(), "new": 0} for j in range(31)]
+    plc = {"makkah": {"tok": 0, "lem": set()}, "madinah": {"tok": 0, "lem": set()}}
+    first = {}
+    events = []
+    for k in order:
+        for loc in occ[k]:
+            s, a, w = map(int, loc.split(":"))
+            events.append((s, a, w, lid[k]))
+    for s, a, w, i in sorted(events):
+        j = mushaf[s]["j"][a - 1]
+        juz[j]["tok"] += 1
+        juz[j]["lem"].add(i)
+        if i not in first:
+            first[i] = j
+            juz[j]["new"] += 1
+        p = plc[place[s]]
+        p["tok"] += 1
+        p["lem"].add(i)
+    mk, md = plc["makkah"]["lem"], plc["madinah"]["lem"]
+    forms = {w[0] for vs in surah_out.values() for v in vs for w in v["w"]}
+    return {
+        "verses": sum(len(v) for v in surah_out.values()),
+        "forms": len(forms),
+        "juz": [{"j": x["j"], "tok": x["tok"], "lem": len(x["lem"]), "new": x["new"]} for x in juz[1:]],
+        "place": {
+            "makkah": {"tok": plc["makkah"]["tok"], "lem": len(mk), "only": len(mk - md),
+                       "surah": sum(1 for c in chapters if c["revelation_place"] == "makkah")},
+            "madinah": {"tok": plc["madinah"]["tok"], "lem": len(md), "only": len(md - mk),
+                        "surah": sum(1 for c in chapters if c["revelation_place"] == "madinah")},
+            "both": len(mk & md),
+        },
+    }
+
+
 VOWEL_I = {}
 # Isim maushul & isyarah mabni: tiap bentuk adalah kata tersendiri (Corpus menyatukannya dalam satu lemma).
 SPLIT = {
@@ -468,6 +506,7 @@ def main():
     dump("roots.json", root_list)
     dump("occ.json", [occ[k] for k in order])
     dump("mushaf.json", mushaf)
+    dump("stats.json", corpus_stats(order, occ, mushaf, chapters, surah_out))
     dump("chapters.json", [{
         "n": c["id"], "ar": c["name_arabic"], "name": c["name_simple"],
         "arti": c["translated_name"]["name"], "ayat": c["verses_count"], "place": c["revelation_place"],

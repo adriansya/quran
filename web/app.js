@@ -20,6 +20,7 @@ const store = {
 };
 import * as S from "./srs.js";
 import { initStudy, pageStudy, pageStats, leaveStudy, coverage } from "./study.js";
+import { renderDashboard } from "./dash.js";
 S.load();
 const settings = Object.assign({ showT: true, showM: true }, store.get("settings", {}));
 const saveSettings = () => store.set("settings", settings);
@@ -74,51 +75,30 @@ function lemmaRow(L) {
 }
 
 // ---------- halaman ----------
-function curveSVG() {
-  const W = 420, H = 170, P = 30, max = 2000;
-  let cum = 0; const pts = [];
-  for (let i = 0; i < max; i++) { cum += LEMMAS[i].n; if (i % 10 === 0 || i === max - 1) pts.push([i + 1, cum / TOTAL_WORDS]); }
-  const x = (i) => P + (i / max) * (W - P - 10), y = (v) => H - P - v * (H - P - 10);
-  const d = pts.map(([i, v], k) => `${k ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
-  const marks = [100, 300, 1000].map((m) => { let c = 0; for (let i = 0; i < m; i++) c += LEMMAS[i].n; return [m, c / TOTAL_WORDS]; });
-  return `<svg class="curve" viewBox="0 0 ${W} ${H}" role="img" aria-label="Kurva cakupan kosakata">
-    <line class="ax" x1="${P}" y1="${H - P}" x2="${W - 10}" y2="${H - P}"/><line class="ax" x1="${P}" y1="10" x2="${P}" y2="${H - P}"/>
-    <path class="area" d="${d}L${x(max)},${y(0)}L${x(0)},${y(0)}Z"/><path d="${d}"/>
-    ${marks.map(([m, v]) => `<circle cx="${x(m)}" cy="${y(v)}" r="4"/><text x="${x(m) + 6}" y="${y(v) + 14}">${m} kata → ${Math.round(v * 100)}%</text>`).join("")}
-    <text x="${P}" y="${H - 10}">0</text><text x="${W - 10}" y="${H - 10}" text-anchor="end">${max} lemma</text>
-    <text x="2" y="16">100%</text>
-  </svg>`;
-}
-
-function pageHome() {
+async function pageHome() {
   const c = coverage();
   const due = Object.values(S.st.cards).filter((s) => s.due <= Date.now()).length, sk = S.streak();
+  const lp = c.learned / TOTAL_WORDS;
   $app.innerHTML = `
-  <section class="hero">
-    <div>
+  <section class="intro">
+    <div class="intro-txt">
+      <p class="eyebrow">Kosakata Al-Qur'an · <span class="ar">كَلِمَاتُ الْقُرْآنِ</span></p>
       <h1>Pahami Al-Qur'an, satu kata setiap hari.</h1>
-      <p class="muted">Hanya <b>300 kata dasar</b> mencakup sekitar <b>74%</b> dari seluruh ${fmt(TOTAL_WORDS)} kata dalam Al-Qur'an.
-      Pelajari dari yang paling sering muncul, lengkap dengan akar kata dan contoh ayat beserta terjemah Kemenag.</p>
+      <p class="lead">Belajar dari kata yang paling sering muncul, lengkap dengan akar kata, sharaf, dan contoh ayat beserta terjemah Kemenag.</p>
       <div class="row"><a class="btn primary" href="#/latihan">Mulai latihan${due ? ` · ${due} perlu diulang` : ""}</a>
       <a class="btn" href="#/kosakata">Jelajahi kosakata</a></div>
-      ${sk ? `<p class="small muted">🔥 ${sk} hari beruntun · <a href="#/statistik">lihat statistik</a></p>` : ""}
     </div>
-    <div class="card">${curveSVG()}</div>
+    <aside class="me">
+      <div class="me-h"><span>Progres kamu</span>${sk ? `<span class="pill">🔥 ${sk} hari</span>` : ""}</div>
+      <div class="me-v">${pct(lp)}</div>
+      <div class="me-k">kata Al-Qur'an yang sudah kamu pahami</div>
+      <div class="meter" role="img" aria-label="Progres ${pct(lp)}"><div style="width:${Math.min(100, lp * 100)}%"></div></div>
+      <div class="me-s">${fmt(c.nl)} kata dasar lulus · ${fmt(c.lrn)} sedang dipelajari · ${fmt(c.nm)} dikuasai · <a href="#/statistik">statistik</a></div>
+    </aside>
   </section>
-  <h2>Progres kamu</h2>
-  <div class="card">
-    <div class="row" style="justify-content:space-between"><b>Cakupan kata yang sudah dipelajari</b><b>${pct(c.learned / TOTAL_WORDS)}</b></div>
-    <div class="coverage-bar"><div style="width:${(c.learned / TOTAL_WORDS) * 100}%"></div></div>
-    <div class="muted small">${fmt(c.nl)} kata dasar lulus · ${fmt(c.lrn)} sedang dipelajari · ${fmt(c.nm)} dikuasai (${pct(c.mastered / TOTAL_WORDS)} kata Al-Qur'an)</div>
-  </div>
-  <div class="grid stats" style="margin-top:12px">
-    <div class="card stat"><div class="v">${fmt(TOTAL_WORDS)}</div><div class="k">kata dalam Al-Qur'an</div></div>
-    <div class="card stat"><div class="v">${fmt(LEMMAS.length)}</div><div class="k">lemma (kata dasar)</div></div>
-    <div class="card stat"><div class="v">1.642</div><div class="k">akar kata</div></div>
-    <div class="card stat"><div class="v">114</div><div class="k">surah, kata per kata</div></div>
-  </div>
-  <h2>10 kata paling sering</h2>
-  <div class="vlist">${LEMMAS.slice(0, 10).map(lemmaRow).join("")}</div>`;
+  <div class="sect-h"><h2>Statistik isi Al-Qur'an</h2><p class="muted">Analisis ${fmt(TOTAL_WORDS)} kata dari 114 surah. Arahkan kursor (atau ketuk) grafik untuk detail; setiap grafik punya tabel datanya.</p></div>
+  <div id="dash"><p class="muted">Menghitung statistik…</p></div>`;
+  await renderDashboard(document.getElementById("dash"), { LEMMAS, TOTAL_WORDS, fmt, getJSON, roots });
 }
 
 function pageVocab(q) {
@@ -293,7 +273,7 @@ async function route() {
   leaveStudy();
   try {
     switch (parts[0]) {
-      case undefined: pageHome(); break;
+      case undefined: await pageHome(); break;
       case "kosakata": pageVocab(q); break;
       case "kata": await pageLemma(+parts[1]); break;
       case "akar": parts[1] ? await pageRoot(decodeURIComponent(parts[1])) : await pageRoots(q); break;
