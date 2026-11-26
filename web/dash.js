@@ -201,6 +201,7 @@ function targetSection(cum) {
         el("div", { class: "tname", text: s.utama ? `${s.nama} ★` : s.nama }),
         el("div", { class: "tn", html: `<b>${C.fmt(s.n)}</b> kata dasar` }),
         el("div", { class: "tp", text: pct0(p) }),
+        el("div", { class: "tc", text: "dari seluruh kata dalam Al-Qur'an" }),
         el("div", { class: "tt", text: `⏱ ${lama(Math.ceil(s.n / npd))}` }),
         el("div", { class: "tm", role: "img", "aria-label": `Progres ${got} dari ${s.n}` }, el("div", { style: `width:${Math.min(100, f * 100)}%` })),
         el("div", { class: "tg", text: done ? "Tercapai! 🎉" : got ? `${C.fmt(got)} / ${C.fmt(s.n)} sudah lulus` : "Belum dimulai" }),
@@ -213,8 +214,8 @@ function targetSection(cum) {
     el("div", { class: "target-h" }, [
       el("div", {}, [
         el("p", { class: "eyebrow", text: "Target hafalan" }),
-        el("h3", { html: `Hafal <b>300 kata</b>, pahami <b>${pct0(p300)}</b> Al-Qur'an` }),
-        el("p", { class: "target-sub", html: `Dari <b>${C.fmt(L.length)}</b> kata dasar, ada yang muncul ribuan kali (<span class="ar" dir="rtl">مِنْ، اللّٰهُ، قَالَ</span>) dan ada <b>${C.fmt(L.filter((x) => x.n === 1).length)}</b> yang hanya muncul sekali. Karena latihan dimulai dari kata yang paling sering, 300 kata pertama sudah mencakup <b>${pct0(p300)}</b> kata dalam Al-Qur'an. Dengan <b>${npd} kata baru per hari</b>, target ini tercapai dalam <b>${lama(Math.ceil(300 / npd))}</b>, cukup 10–15 menit sehari.` }),
+        el("h3", { html: `Hafal <b>300 kata dasar</b>, kenali <b>${pct0(p300)}</b> dari seluruh kata dalam Al-Qur'an` }),
+        el("p", { class: "target-sub", html: `Dari <b>${C.fmt(L.length)}</b> kata dasar, ada yang muncul ribuan kali (<span class="ar" dir="rtl">مِنْ، اللّٰهُ، قَالَ</span>) dan ada <b>${C.fmt(L.filter((x) => x.n === 1).length)}</b> yang hanya muncul sekali. Karena latihan dimulai dari kata yang paling sering, 300 kata pertama sudah mencakup <b>${pct0(p300)}</b> dari seluruh <b>${C.fmt(C.TOTAL_WORDS)}</b> kata dalam Al-Qur'an. Dengan <b>${npd} kata baru per hari</b>, target ini tercapai dalam <b>${lama(Math.ceil(300 / npd))}</b>, cukup 10–15 menit sehari.` }),
       ]),
       el("a", { class: "btn primary", href: "#/latihan", text: "Mulai latihan →" }),
     ]),
