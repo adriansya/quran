@@ -161,12 +161,13 @@ h2 { font-size: 18px; margin: 28px 0 10px; }
 .scard .ar { font-size: 20px; line-height: 1.5; }
 
 .ayah { padding: 16px 0; border-bottom: 1px solid var(--line); }
-.words { display: flex; flex-wrap: wrap; direction: rtl; gap: 6px 4px; }
-.word { display: flex; flex-direction: column; align-items: center; padding: 4px 8px; border-radius: 10px; cursor: pointer; color: var(--text); min-width: 48px; }
+.words { display: flex; flex-wrap: wrap; direction: rtl; gap: 14px 6px; align-items: flex-start; }
+.word { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 8px 6px; border-radius: 10px; cursor: pointer; color: var(--text); min-width: 52px; max-width: 132px; }
 .word:hover { background: var(--surface-2); text-decoration: none; }
-.word .ar { font-size: 28px; line-height: 1.8; }
-.word .m { font-size: 12px; color: var(--muted); direction: ltr; text-align: center; max-width: 120px; line-height: 1.3; }
-.word .t { font-size: 11px; color: var(--gold); direction: ltr; font-style: italic; }
+/* ruang di bawah tulisan Arab agar kasrah/tanwin kasrah tidak menimpa arti */
+.word .ar { display: block; font-size: 28px; line-height: 1.6; padding: 0.15em 0 0.45em; }
+.word .m { display: block; font-size: 12px; color: var(--muted); direction: ltr; text-align: center; max-width: 116px; line-height: 1.35; overflow-wrap: anywhere; hyphens: auto; }
+.word .t { display: block; font-size: 11px; color: var(--gold); direction: ltr; font-style: italic; text-align: center; max-width: 116px; overflow-wrap: anywhere; }
 .word.known .ar { color: var(--ok); }
 .ayah .num { display: inline-grid; place-items: center; min-width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--gold); color: var(--gold); font-size: 12px; font-weight: 600; margin-bottom: 6px; }
 .ayah .tr { margin-top: 8px; }
