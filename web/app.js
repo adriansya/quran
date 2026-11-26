@@ -98,7 +98,7 @@ async function pageHome() {
   </section>
   <div class="sect-h"><h2>Statistik isi Al-Qur'an</h2><p class="muted">Analisis ${fmt(TOTAL_WORDS)} kata dari 114 surah. Arahkan kursor (atau ketuk) grafik untuk detail; setiap grafik punya tabel datanya.</p></div>
   <div id="dash"><p class="muted">Menghitung statistik…</p></div>`;
-  await renderDashboard(document.getElementById("dash"), { LEMMAS, TOTAL_WORDS, fmt, getJSON, roots });
+  await renderDashboard(document.getElementById("dash"), { LEMMAS, TOTAL_WORDS, fmt, getJSON, roots, npd: S.st.npd, level: S.level });
 }
 
 function pageVocab(q) {

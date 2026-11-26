@@ -179,6 +179,53 @@ function coverageChart(cum) {
   return s;
 }
 
+// ---------- peta target hafalan ----------
+// Kata dasar diurutkan dari yang paling sering muncul (urutan default latihan), jadi
+// "N kata teratas" = kartu ke-1..N. Lama waktu dihitung dari kata baru per hari milik pengguna.
+const lama = (d) => (d < 25 ? `${d} hari` : d <= 45 ? "± 1 bulan" : d < 75 ? `± ${Math.round(d / 7)} minggu` : `± ${Math.round(d / 30)} bulan`);
+const banding = (p) => (p >= 0.95 ? "19 dari 20" : p >= 0.88 ? "9 dari 10" : p >= 0.79 ? "4 dari 5" : p >= 0.72 ? "3 dari 4" : p >= 0.65 ? "2 dari 3" : "lebih dari separuh");
+const bandingTxt = (p) => (p < 0.65 ? "lebih dari separuh kata yang kamu baca di mushaf" : `≈ ${banding(p)} kata yang kamu baca di mushaf`);
+function targetSection(cum) {
+  const npd = C.npd || 10, L = C.LEMMAS;
+  const STEPS = [
+    { n: 100, nama: "Langkah awal" },
+    { n: 300, nama: "Target pertama", utama: true },
+    { n: 500, nama: "Lancar" },
+    { n: 1000, nama: "Mahir" },
+    { n: 2000, nama: "Pakar" },
+  ];
+  const lulus = (n) => { let k = 0; for (let i = 0; i < n; i++) if (C.level(i) >= 2) k++; return k; };
+  const tiles = STEPS.map((s, i) => {
+    const p = cum[s.n - 1], got = lulus(s.n), done = got >= s.n, f = got / s.n;
+    const t = el("li", { class: "tstep" + (s.utama ? " main" : "") + (done ? " tok" : "") }, [
+      el("div", { class: "tdot", "aria-hidden": "true", text: done ? "✓" : String(i + 1) }),
+      el("div", { class: "tbody" }, [
+        el("div", { class: "tname", text: s.utama ? `${s.nama} ★` : s.nama }),
+        el("div", { class: "tn", html: `<b>${C.fmt(s.n)}</b> kata dasar` }),
+        el("div", { class: "tp", text: pct0(p) }),
+        el("div", { class: "tq", text: bandingTxt(p) }),
+        el("div", { class: "tt", text: `⏱ ${lama(Math.ceil(s.n / npd))}` }),
+        el("div", { class: "tm", role: "img", "aria-label": `Progres ${got} dari ${s.n}` }, el("div", { style: `width:${Math.min(100, f * 100)}%` })),
+        el("div", { class: "tg", text: done ? "Tercapai! 🎉" : got ? `${C.fmt(got)} / ${C.fmt(s.n)} sudah lulus` : "Belum dimulai" }),
+      ]),
+    ]);
+    return t;
+  });
+  const p300 = cum[299];
+  return el("section", { class: "target" }, [
+    el("div", { class: "target-h" }, [
+      el("div", {}, [
+        el("p", { class: "eyebrow", text: "Target hafalan" }),
+        el("h3", { html: `Hafal <b>300 kata</b>, pahami <b>${pct0(p300)}</b> Al-Qur'an` }),
+        el("p", { class: "target-sub", html: `Dari <b>${C.fmt(L.length)}</b> kata dasar, ada yang muncul ribuan kali (<span class="ar" dir="rtl">مِنْ، اللّٰهُ، قَالَ</span>) dan ada <b>${C.fmt(L.filter((x) => x.n === 1).length)}</b> yang hanya muncul sekali. Karena latihan dimulai dari kata yang paling sering, 300 kata pertama sudah membuka sekitar <b>${banding(p300)}</b> kata di setiap halaman mushaf. Dengan <b>${npd} kata baru per hari</b>, target ini tercapai dalam <b>${lama(Math.ceil(300 / npd))}</b>, cukup 10–15 menit sehari.` }),
+      ]),
+      el("a", { class: "btn primary", href: "#/latihan", text: "Mulai latihan →" }),
+    ]),
+    el("ol", { class: "tsteps" }, tiles),
+    el("p", { class: "target-note small muted", html: `Lama waktu dihitung dari ${npd} kata baru per hari (bisa diubah di halaman Latihan). Kata yang sudah dihafal tetap diulang sesuai jadwal agar tidak lupa.` }),
+  ]);
+}
+
 // ---------- dashboard ----------
 export async function renderDashboard(root, ctx) {
   C = ctx;
@@ -193,7 +240,7 @@ export async function renderDashboard(root, ctx) {
   const head = el("div", { class: "dhead" }, [
     el("div", { class: "dhero" }, [
       el("div", { class: "dhero-fig", text: pct0(cum[299]) }),
-      el("div", { class: "dhero-txt", html: `kata dalam Al-Qur'an sudah tercakup oleh <b>300 kata dasar</b> yang paling sering muncul. Cukup <b>${C.fmt(N50)}</b> kata dasar untuk separuhnya, dan <b>${C.fmt(N80)}</b> untuk 80%.` }),
+      el("div", { class: "dhero-txt", html: `kata dalam Al-Qur'an sudah tercakup oleh <b>300 kata dasar</b> yang paling sering muncul (dari ${C.fmt(L.length)}). Cukup <b>${C.fmt(N50)}</b> kata dasar untuk separuhnya, dan <b>${C.fmt(N80)}</b> untuk 80%.` }),
     ]),
     el("div", { class: "kpis" }, [
       ["Kata (kemunculan)", C.fmt(T), `${C.fmt(ST.verses)} ayat · 114 surah`],
@@ -312,5 +359,5 @@ export async function renderDashboard(root, ctx) {
     hbars(L.slice(0, 15).map((x) => ({ label: x.mean[0] || "", labelAr: x.ar, value: x.n, href: `#/kata/${x.id}`, tipTitle: `${x.ar} · ${x.mean[0] || ""}`, tip: [[C.fmt(x.n) + "×", "muncul"], [pct1(x.n / T), "kata Al-Qur'an"], [x.jenis[0], ""]] })), C.fmt, { ar: true }),
     { head: ["No.", "Kata", "Arti", "Kemunculan"], rows: L.slice(0, 50).map((x, i) => [String(i + 1), x.ar, x.mean[0] || "", C.fmt(x.n)]) }, true);
 
-  root.replaceChildren(head, el("div", { class: "dgrid" }, [c1, c2, c3, c4, c5, c6, c7, c9, c8, c10]));
+  root.replaceChildren(targetSection(cum), head, el("div", { class: "dgrid" }, [c1, c2, c3, c4, c5, c6, c7, c9, c8, c10]));
 }
