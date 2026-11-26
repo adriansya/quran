@@ -15,6 +15,7 @@ const ls = {
 };
 
 let sb = null, user = null, status = "idle", timer = null, busy = null, opts = {};
+export const AUTH_HASH = /^#(access_token|error)=|[#&](access_token|error_description)=/;
 export const enabled = () => !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 export const currentUser = () => user;
 
@@ -72,10 +73,6 @@ async function loginGoogle() {
 }
 async function sendEmail(email) {
   const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo() } });
-  if (error) throw error;
-}
-async function verifyCode(email, token) {
-  const { error } = await sb.auth.verifyOtp({ email, token, type: "email" });
   if (error) throw error;
 }
 async function logout() {
@@ -142,14 +139,14 @@ function openDialog() {
     <div class="login-or"><span>atau dengan email</span></div>
     <form id="lgMail" class="login-f">
       <input type="email" id="lgEmail" required placeholder="nama@email.com" autocomplete="email">
-      <button class="btn primary" type="submit">Kirim kode</button>
+      <button class="btn primary" type="submit">Kirim tautan masuk</button>
     </form>
-    <form id="lgCode" class="login-f" hidden>
-      <p class="small">Kode masuk sudah dikirim ke <b id="lgTo"></b>. Masukkan kodenya di sini, atau klik tautan di email itu.</p>
-      <input id="lgTok" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" required placeholder="Kode dari email">
-      <button class="btn primary" type="submit">Masuk</button>
+    <div id="lgSent" class="login-sent" hidden>
+      <div class="login-sent-ic" aria-hidden="true">✉️</div>
+      <p>Tautan masuk sudah dikirim ke <b id="lgTo"></b>.</p>
+      <p class="small muted">Buka email itu (cek juga folder Spam/Promosi) lalu klik <b>Log In</b>. Boleh dibuka di HP atau browser lain; di sanalah kamu akan masuk.</p>
       <button class="btn sm" type="button" id="lgBack">Ganti email</button>
-    </form>
+    </div>
     <p class="login-msg small" id="lgMsg" role="status"></p>
     <p class="small muted">Tanpa masuk pun aplikasi tetap bisa dipakai; progres hanya tersimpan di browser ini.</p>`;
   const $ = (id) => dlg.querySelector("#" + id), msg = (t, err) => { $("lgMsg").textContent = t; $("lgMsg").classList.toggle("err", !!err); };
@@ -160,10 +157,9 @@ function openDialog() {
   $("lgMail").onsubmit = (e) => {
     e.preventDefault();
     const email = $("lgEmail").value.trim();
-    busyBtn(e.submitter, async () => { msg(""); await sendEmail(email); $("lgTo").textContent = email; $("lgMail").hidden = true; $("lgCode").hidden = false; $("lgTok").focus(); });
+    busyBtn(e.submitter, async () => { msg(""); await sendEmail(email); $("lgTo").textContent = email; $("lgMail").hidden = true; $("lgSent").hidden = false; });
   };
-  $("lgCode").onsubmit = (e) => { e.preventDefault(); busyBtn(e.submitter, () => verifyCode($("lgEmail").value.trim(), $("lgTok").value.trim())); };
-  $("lgBack").onclick = () => { $("lgMail").hidden = false; $("lgCode").hidden = true; msg(""); };
+  $("lgBack").onclick = () => { $("lgMail").hidden = false; $("lgSent").hidden = true; msg(""); };
   dlg.showModal();
 }
 
@@ -174,15 +170,15 @@ export async function initSync(o) {
   if (!enabled()) return;
   try {
     const { createClient } = await import(CDN);
-    sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flowType: "pkce", persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flowType: "implicit", persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
   } catch (e) { console.warn("Supabase tidak termuat", e); return; }
   S.onSave(queue);
   window.addEventListener("online", flush);
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flush(); else if (user) syncNow(); });
   render();
   const { data } = await sb.auth.getSession();
-  // bersihkan ?code=… sisa login Google/tautan email dari alamat
-  if (/[?&]code=/.test(location.search)) history.replaceState(null, "", location.pathname + location.hash);
+  // bersihkan #access_token=… sisa login Google/tautan email dari alamat
+  if (AUTH_HASH.test(location.hash)) history.replaceState(null, "", location.pathname + "#/");
   sb.auth.onAuthStateChange((_ev, session) => { setTimeout(() => onUser(session?.user || null), 0); });
   await onUser(data.session?.user || null);
 }

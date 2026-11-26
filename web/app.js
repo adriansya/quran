@@ -21,7 +21,7 @@ const store = {
 import * as S from "./srs.js";
 import { initStudy, pageStudy, pageStats, leaveStudy, coverage } from "./study.js";
 import { renderDashboard } from "./dash.js";
-import { initSync } from "./sync.js";
+import { initSync, AUTH_HASH } from "./sync.js";
 S.load();
 const settings = Object.assign({ showT: true, showM: true }, store.get("settings", {}));
 const saveSettings = () => store.set("settings", settings);
@@ -268,7 +268,7 @@ function notFound() { $app.innerHTML = `<div class="empty"><h1>Halaman tidak dit
 
 // ---------- router ----------
 async function route() {
-  const [path, qs] = (location.hash.slice(1) || "/").split("?");
+  const [path, qs] = (AUTH_HASH.test(location.hash) ? "/" : location.hash.slice(1) || "/").split("?"); // sisa login: tampilkan beranda
   const q = new URLSearchParams(qs), parts = path.split("/").filter(Boolean);
   document.querySelectorAll("[data-nav]").forEach((a) => a.classList.toggle("active", a.dataset.nav === (["kata", "akar"].includes(parts[0]) ? "kosakata" : parts[0] || "home")));
   leaveStudy();

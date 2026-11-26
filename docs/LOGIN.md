@@ -33,16 +33,16 @@ grant select, insert, update on table public.progress to authenticated;
    `web/config.js`. (Kunci ini memang untuk web publik; data dilindungi aturan di atas.
    Jangan pernah memakai kunci `service_role`.)
 
-## 2. Login email (kode 6 digit)
+## 2. Login email (tautan)
 
-Di aplikasi pengguna mengetik email, lalu memasukkan kode dari email (atau mengklik tautannya).
-Kode lebih andal di HP karena tautan email sering terbuka di browser lain.
+Pengguna mengetik email, lalu mengklik tautan **Log In** di email dari Supabase. Tautan boleh dibuka
+di browser/perangkat mana pun (token dibawa di alamat, `flowType: "implicit"`), jadi aman walau
+email dibuka di aplikasi Gmail. Template email bawaan sudah cukup; tidak perlu diubah.
 
-- **Authentication → Emails → Templates → Magic Link**: pastikan isi email memuat kode, misalnya
-  tambahkan baris `<p>Kode masuk: <b>{{ .Token }}</b></p>` di samping tautan `{{ .ConfirmationURL }}`.
-- Pengiriman email bawaan Supabase dibatasi (beberapa email per jam) dan hanya cocok untuk uji coba.
-  Untuk banyak pengguna, pasang SMTP sendiri di **Authentication → Emails → SMTP Settings**
-  (mis. Resend, Brevo, atau Gmail SMTP).
+- Pengiriman email bawaan Supabase sangat dibatasi (±2 email per jam untuk seluruh project), hanya
+  cocok untuk uji coba. Untuk banyak pengguna, pasang SMTP sendiri di
+  **Authentication → Emails → SMTP Settings** (mis. Resend atau Brevo, ada paket gratis), atau
+  andalkan login Google yang tidak memakai email.
 
 ## 3. Login Google
 

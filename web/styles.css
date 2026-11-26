@@ -468,6 +468,8 @@ dialog.login > p { margin: 0 0 14px; font-size: 14px; line-height: 1.55; }
 .login-f p { margin: 0 0 2px; }
 .login-f input { font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); width: 100%; box-sizing: border-box; }
 .login-f input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-#lgTok { font-size: 20px; letter-spacing: .3em; text-align: center; font-variant-numeric: tabular-nums; }
+.login-sent { display: grid; gap: 6px; justify-items: center; padding: 6px 0; }
+.login-sent p { margin: 0; line-height: 1.5; }
+.login-sent-ic { font-size: 34px; }
 .login-msg { min-height: 1.2em; margin: 10px 0 4px; color: var(--ok); }
 .login-msg.err { color: var(--danger); }
