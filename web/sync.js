@@ -5,7 +5,7 @@
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
 import * as S from "./srs.js";
 
-const CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
+const CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/+esm";
 const OWNER = "kq.owner"; // id akun pemilik progres yang tersimpan di browser ini
 const DIRTY = "kq.dirty"; // ada perubahan yang belum terkirim
 const SYNCT = "kq.syncT"; // cap waktu progres akun saat terakhir sinkron
@@ -62,6 +62,9 @@ function queue() {
 const flush = () => { if (user && ls.get(DIRTY)) { clearTimeout(timer); syncNow(); } };
 
 // ---------- login / keluar ----------
+let pvCache = null;
+const providers = () => pvCache || (pvCache = fetch(SUPABASE_URL + "/auth/v1/settings", { headers: { apikey: SUPABASE_ANON_KEY } })
+  .then((r) => r.json()).then((j) => j.external || {}).catch(() => ({ google: true, email: true })));
 const redirectTo = () => location.origin + location.pathname;
 async function loginGoogle() {
   const { error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: redirectTo() } });
@@ -152,6 +155,8 @@ function openDialog() {
   const $ = (id) => dlg.querySelector("#" + id), msg = (t, err) => { $("lgMsg").textContent = t; $("lgMsg").classList.toggle("err", !!err); };
   const busyBtn = async (btn, fn) => { btn.disabled = true; try { await fn(); } catch (e) { msg(e.message || String(e), true); } finally { btn.disabled = false; } };
   $("lgG").onclick = (e) => busyBtn(e.currentTarget, loginGoogle);
+  // Sembunyikan tombol Google bila penyedia Google belum diaktifkan di Supabase.
+  providers().then((pv) => { if (!pv.google) { $("lgG").hidden = true; dlg.querySelector(".login-or span").textContent = "masuk dengan email"; } });
   $("lgMail").onsubmit = (e) => {
     e.preventDefault();
     const email = $("lgEmail").value.trim();

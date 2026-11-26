@@ -22,6 +22,8 @@ create policy "tambah milik sendiri" on public.progress
   for insert with check ((select auth.uid()) = user_id);
 create policy "ubah milik sendiri" on public.progress
   for update using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+-- project baru Supabase tidak otomatis memberi izin tabel ke pengguna yang login:
+grant select, insert, update on table public.progress to authenticated;
 ```
 
 3. **Authentication → URL Configuration**
