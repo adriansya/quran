@@ -231,7 +231,7 @@ export async function pageStudy() {
   $("srcMode").onclick = (e) => { const m = e.target.dataset.m; if (!m) return; setSrc(m === "freq" ? "freq" : "j" + (IDX.pageJuz[+S.st.src.slice(1)] || +S.st.src.slice(1) || 1)); };
   $("juz").onchange = (e) => setSrc("j" + e.target.value);
   $("hal").onchange = (e) => setSrc(e.target.value);
-  $("npd").onclick = (e) => { if (!e.target.dataset.v) return; S.st.npd = +e.target.dataset.v; S.save(); syncSide(); updateCounts(); if (!cur && !drill) next(); };
+  $("npd").onclick = (e) => { if (!e.target.dataset.v) return; S.st.npd = +e.target.dataset.v; S.save(); syncSide(); updateCounts(); if (cur == null && !drill) next(); };
   $("scope").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; S.st.scope = b.dataset.v; S.save(); syncSide(); if (!answered && !drill) next(); };
 
   function updateCounts() {
@@ -292,6 +292,9 @@ export async function pageStudy() {
     }
     cxList = groups; cxi = 0; showCx();
     updateCounts();
+    // Tombol pilihan baru saja dinonaktifkan; pindahkan fokus agar pintasan keyboard (1–4, Spasi, Enter) tetap jalan.
+    const next = !$("rate").hidden ? $("rate").querySelector('[data-r="3"]') : $("dNext");
+    next.focus({ preventScroll: true });
   }
   async function showCx() {
     const g = cxList[cxi];
@@ -352,7 +355,7 @@ export async function pageStudy() {
 
   keyHandler = (e) => {
     const k = e.key.toLowerCase();
-    if (!cur) return;
+    if (cur == null) return;
     if (!answered) {
       const i = "abcd".indexOf(k) >= 0 ? "abcd".indexOf(k) : "1234".indexOf(k);
       if (i >= 0) { const b = $("opts").querySelectorAll(".opt")[i]; if (b) { e.preventDefault(); b.click(); } }
