@@ -239,6 +239,16 @@ def mamnu_by_rule(ar, bw, root, kind, pos, pattern_only=False):
 MAMNU_EXTRA = {"أَشْيَاء", "أَتْقَى"}
 MUNSARIF_EXTRA = {"أَرْبَع", "مَالِك"}  # أَرْبَعٌ: wazan أَفْعَل tapi isim (bilangan), munsarif
 FALAN = {"كَسْلَان", "رَحْمٰن", "سَكْرَان", "غَضْبَان", "حَيْرَان"}
+# Tulisan baku harf & isim mabni dengan harakat bina'-nya (Corpus tidak menulis harakat akhir).
+MABNI_FORM = {
+    "min": "مِنْ", "Ean": "عَنْ", "qad": "قَدْ", "lam": "لَمْ", "lan": "لَنْ", "bal": "بَلْ", "hal": "هَلْ",
+    ">am": "أَمْ", "<in": "إِنْ", ">an": "أَنْ", "man": "مَنْ", "kam": "كَمْ", "naEam": "نَعَمْ",
+    "la`kin": "لٰكِنْ", "<il~am": "إِلَّمْ", "<in~": "إِنَّ", ">an~": "أَنَّ", "vum~": "ثُمَّ",
+    "laEal~": "لَعَلَّ", "la`kin~": "لٰكِنَّ", "ka>an~": "كَأَنَّ", "wayoka>an~": "وَيْكَأَنَّ",
+    "kayof": "كَيْفَ", ">ayon": "أَيْنَ", ">ay~aAn": "أَيَّانَ", "sawof": "سَوْفَ", "layot": "لَيْتَ",
+    ">aw": "أَوْ", "law": "لَوْ", "kaY": "كَيْ", "<iY": "إِيْ",
+    "maE2": "مَعَ", "Hayov2": "حَيْثُ", "haA^&um": "هَاؤُمُ", "misaAs": "مِسَاسَ", ">aY~": "أَيٌّ",
+}
 MABNI = {"لَدُن", "لَدُنْ"}  # pengecualian masyhur (أَشْيَاءُ ghairu munsharif)
 DAMMA, TANWIN_D, TANWIN_F, TANWIN_K, FATHA = "\u064F", "\u064C", "\u064B", "\u064D", "\u064E"
 

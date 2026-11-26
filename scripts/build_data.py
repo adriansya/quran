@@ -420,15 +420,17 @@ def main():
         kind, _, key = k.partition(":") if ":" in k and k.split(":")[0] in POS_ID or k.startswith("INL:") else ("", "", k)
         if kind == "PRON" and key in PRONOUNS:
             ar, means = PRONOUNS[key][0], PRONOUNS[key][1]
-        elif kind:  # huruf muqatta'ah dll: pakai tulisan mushaf
-            ar = top_form
+        elif kind:  # huruf muqatta'ah dll: pakai tulisan mushaf (tanpa tanda waqaf di belakangnya)
+            ar = re.sub(r"[\s\u06D6-\u06DC]+$", "", top_form)
         else:
             ar = std(noun_bw(display, L["root"], L["pcpl"] > 0) if pos in ("N", "ADJ") else display)
         jk = NAW.classify(k, pos, L["root"], L["feat"], means, L["vform"].most_common(1)[0][0] if L["vform"] else None,
                           VOWEL_I.get(L["root"]))
         mamnu = False
         zh = NAW.ZHARAF.get(k)
-        if zh:
+        if k in NAW.MABNI_FORM:
+            ar_plain, ar = ar, NAW.MABNI_FORM[k]  # harf/isim mabni: harakat bina' ditulis (مِنْ، إِنَّ، كَيْفَ)
+        elif zh:
             ar_plain, ar = ar, zh[1]  # zharaf ditulis sesuai pemakaiannya (قَبْلَ، فَوْقَ، حَيْثُ)
         elif pos in ("N", "ADJ", "PN") and not kind:
             F = L["feat"]
