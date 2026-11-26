@@ -85,19 +85,52 @@ export function load() {
     if (v) { const o = JSON.parse(v); st = Object.assign(blank(), o, { dv: o.dv || 1 }); } else migrateV1();
   } catch { canStore = false; }
 }
-// Pindahkan progres dari nomor kata lama ke nomor baru (map[lama] = baru).
-export function remapIds(map) {
+// Pindahkan progres dari nomor kata lama ke nomor baru (map[lama] = baru). Fungsi murni.
+export function remapState(s, map) {
   const cards = {}, w = {};
-  for (const [old, c] of Object.entries(st.cards)) {
+  for (const [old, c] of Object.entries(s.cards || {})) {
     const n = map[old];
     if (n == null) continue;
     const y = cards[n];
     if (!y || (c.q === 1 && (y.q !== 1 || c.iv > y.iv))) cards[n] = c;
   }
-  for (const [old, k] of Object.entries(st.w)) { const n = map[old]; if (n != null) w[n] = (w[n] || 0) + k; }
-  st.cards = cards; st.w = w; st.dv = (st.dv || 1) + 1; save();
+  for (const [old, k] of Object.entries(s.w || {})) { const n = map[old]; if (n != null) w[n] = (w[n] || 0) + k; }
+  return { ...s, cards, w, dv: (s.dv || 1) + 1 };
 }
-export function save() { st.t = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(st)); } catch { canStore = false; } }
+export function remapIds(map) { st = remapState(st, map); save(); }
+
+// Gabungkan dua progres (mis. progres di browser + progres di akun). Tidak ada ulasan yang hilang:
+// per kartu dipilih yang paling banyak diulas (seri: yang jadwalnya lebih akhir).
+export function mergeStates(a, b) {
+  a = Object.assign(blank(), a); b = Object.assign(blank(), b);
+  const newer = (a.t || 0) >= (b.t || 0) ? a : b;
+  const cards = { ...a.cards };
+  for (const [id, c] of Object.entries(b.cards)) {
+    const y = cards[id];
+    if (!y || c.r > y.r || (c.r === y.r && c.due > y.due)) cards[id] = c;
+  }
+  const days = { ...a.days };
+  for (const [k, d] of Object.entries(b.days)) {
+    const y = days[k];
+    days[k] = !y ? d : { n: Math.max(y.n, d.n), r: Math.max(y.r, d.r), ok: Math.max(y.ok, d.ok) };
+  }
+  const maxMap = (x, y) => { const o = { ...x }; for (const [k, v] of Object.entries(y)) o[k] = Math.max(o[k] || 0, v); return o; };
+  const sk = (a.sk.d > b.sk.d || (a.sk.d === b.sk.d && a.sk.n >= b.sk.n)) ? a.sk : b.sk;
+  return {
+    ...newer, cards, days, w: maxMap(a.w, b.w), extra: maxMap(a.extra, b.extra), sk,
+    badges: [...new Set([...(a.badges || []), ...(b.badges || [])])],
+    t: Math.max(a.t || 0, b.t || 0), dv: Math.min(a.dv || 1, b.dv || 1),
+  };
+}
+export const blankState = () => blank();
+export const isEmpty = (s) => !s || !Object.keys(s.cards || {}).length;
+
+// Dipanggil setiap kali progres berubah (dipakai untuk sinkron ke akun).
+let saveHook = null;
+export const onSave = (f) => { saveHook = f; };
+export function save() { st.t = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(st)); } catch { canStore = false; } saveHook?.(); }
+// Ganti progres tanpa memicu sinkron (dipakai saat menerima data dari akun).
+export function setLocal(s) { st = Object.assign(blank(), s); try { localStorage.setItem(KEY, JSON.stringify(st)); } catch { canStore = false; } }
 export function replaceState(s) { st = Object.assign(blank(), s); save(); }
 export function resetAll() { st = blank(); save(); }
 

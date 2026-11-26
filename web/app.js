@@ -21,6 +21,7 @@ const store = {
 import * as S from "./srs.js";
 import { initStudy, pageStudy, pageStats, leaveStudy, coverage } from "./study.js";
 import { renderDashboard } from "./dash.js";
+import { initSync } from "./sync.js";
 S.load();
 const settings = Object.assign({ showT: true, showM: true }, store.get("settings", {}));
 const saveSettings = () => store.set("settings", settings);
@@ -300,4 +301,14 @@ async function route() {
   });
   window.addEventListener("hashchange", route);
   route();
+  // login & sinkron progres (aktif bila web/config.js diisi)
+  initSync({
+    migrate: async (st) => {
+      st = { ...st };
+      if (S.isEmpty(st)) st.dv = S.DATA_VERSION;
+      while ((st.dv || 1) < S.DATA_VERSION) st = S.remapState(st, await getJSON(`data/remap-v${st.dv || 1}.json`));
+      return st;
+    },
+    onChange: route,
+  });
 })();
