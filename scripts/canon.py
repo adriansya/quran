@@ -35,7 +35,7 @@ VERB_FIX = {
     "yuwSiy": ">awoSaY", "yuroDiEo": ">aroDaEa", "tusaw~aY`": "saw~aY", "tatajaAfaY`": "tajaAfaY",
     "talaZ~aY`": "talaZ~aY", "taHar~a": "taHar~aY", "taDar~aEu": "taDar~aEa", ">arosaY`": ">arosaY",
     "tamaAra": "tamaAraY", "yafotariy": "{fotaraY", "tanaAda": "tanaAdaY", "hayota": "hayota",
-    "haAtu": "haAti", "yuHaA^d~u": "HaAd~a", "yuhoraEu": ">ahoraEa",
+    "haAtu": "haAti", "taEaAla": "taEaAla", "yuHaA^d~u": "HaAd~a", "yuhoraEu": ">ahoraEa",
 }
 WAZAN = {
     "II": "فَعَّلَ", "III": "فَاعَلَ", "IV": "أَفْعَلَ", "V": "تَفَعَّلَ", "VI": "تَفَاعَلَ",

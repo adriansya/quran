@@ -79,7 +79,7 @@ POS_ISIM = {"PN": "alam", "PRON": "dhamir", "DEM": "isyarah", "REL": "maushul", 
 ISTIFHAM_ISIM = {"kayofa", ">ayona", "mataY`", "kam", ">an~aY`", ">ay~aAn", ">ay~", "maA", "man", "maA*aA"}
 KANA = {"kaAna", ">aSobaHa", ">amosaY`", ">aDoHaY`", "Zal~a", "baAta", "SaAra", "laysa", "zaAla", "fati}a", "baraHa",
         "{nfak~a", "daAma"}
-JAMID = {"laysa", "EasaY`", "niEoma", "bi}osa", "habo", "haAti", "hayota", "taEaAlaY`"}
+JAMID = {"laysa", "EasaY`", "niEoma", "bi}osa", "habo", "haAti", "hayota", "taEaAlaY`", "taEaAla"}
 
 
 def template(bw, root):
@@ -143,6 +143,12 @@ JENIS_FIX = {
     "malik": "musyabbahah",  # مَلِكٌ: فَعِل
     "$ahiyd": "mubalaghah",  # شَهِيدٌ (Maha Menyaksikan)
     "raqiyb": "mubalaghah",  # رَقِيبٌ (Maha Mengawasi)
+    "waliY~": "musyabbahah", "kaviyr": "musyabbahah", "qaliyl": "musyabbahah",  # فَعِيل sifat
+    ">aw~al": "tafdhil", "A^xar": "tafdhil",  # أَوَّلُ، آخَرُ (wazan أَفْعَل)
+    "Hayaw`p": "masdar", "qiya`map": "masdar",
+    "taw~aAb": "mubalaghah", "jab~aAr": "mubalaghah", "qawiY~": "musyabbahah", "Ealiy~": "musyabbahah", "faqiyr": "musyabbahah",
+    "DaEiyf": "musyabbahah", "sariyE": "musyabbahah", "xabiyv": "musyabbahah", "m~ariyD": "musyabbahah", "Haniyf": "musyabbahah",
+    "Sabor": "masdar", "SiyaAm": "masdar", "qitaAl": "masdar", "EibaAdat": "masdar",
 }
 # Masdar yang tidak ditandai VN oleh Corpus (dipakai sebagai kata benda), tetapi secara sharaf adalah masdar.
 for _k in ("Eilom", "raHomap", "hudFY", "xaloq", "kufor", "Zulom", "Eamal", "Hukom", "Sabor", "naSor", "Hamod",
@@ -172,6 +178,8 @@ def classify(k, pos, root, feats, means, form, verb_vowel=None):
         return POS_HARF[pos]
     if pos not in ("N", "ADJ"):
         return "harf"
+    if base in JENIS_FIX:
+        return JENIS_FIX[base]
     n = sum(feats.values()) or 1
     t = template(base, root) or ""
     if feats.get("VN", 0) >= 0.5 * feats.get("_n", 1):
@@ -197,8 +205,6 @@ def classify(k, pos, root, feats, means, form, verb_vowel=None):
         return "adad"
     if base.endswith("iy~") and len(base) > 4 and root and root[-1] not in "wy":
         return "nisbah"  # ya' nisbah bukan huruf akar (عَرَبِيّ، حَوَارِيّ)
-    if base in JENIS_FIX:
-        return JENIS_FIX[base]
     # nama/sifat Allah sering ditandai N (bukan ADJ) oleh Corpus: tetap sifat bila bermakna "Maha …"
     maha = any(re.match(r"(Yang )?Maha", m) for m in means)
     intens = (pos == "ADJ" or maha) and any(re.match(r"(Yang )?(Maha|sangat|amat|banyak)", m, re.I) for m in means)
@@ -264,7 +270,9 @@ FALAN = {"كَسْلَان", "رَحْمٰن", "سَكْرَان", "غَضْبَ
 MABNI_FORM = {
     # tulisan kamus yang tidak bisa diturunkan dari kaidah umum
     ">ay~uhaA": "أَيُّهَا", ">ay~atuhaA": "أَيَّتُهَا", "*uw": "ذُو", ">uwliY": "أُولُو", "kilaA": "كِلَا", "kilotaA": "كِلْتَا",
-    ">aqoSaA": "أَقْصَى", "S~afaA": "الصَّفَا", "miSor": "مِصْرُ", "kita`biY": "كِتَابِيَهْ", "raA^d~iY": "رَادٌّ",
+    ">aqoSaA": "أَقْصَى", "S~afaA": "الصَّفَا", "miSor": "مِصْرُ", "A^xar": "آخَرُ", ">aw~al": "أَوَّلُ", "mak~a": "مَكَّنَ", ">aAxa*a": "آخَذَ",
+    "daA^}ibayon": "دَائِبٌ", "mabosuwTataAn": "مَبْسُوطَةٌ", "mudohaA^m~ataAn": "مُدْهَامَّةٌ", "xa`la`t": "خَالَةٌ",
+    "wa`liday": "وَالِدَانِ", "murojawon": "مُرْجًى", "{t~amana": "ائْتَمَنَ", "taEaAla": "تَعَالَ", "l~adun": "لَدُنْ", "kita`biY": "كِتَابِيَهْ", "raA^d~iY": "رَادٌّ",
     "min": "مِنْ", "Ean": "عَنْ", "qad": "قَدْ", "lam": "لَمْ", "lan": "لَنْ", "bal": "بَلْ", "hal": "هَلْ",
     ">am": "أَمْ", "<in": "إِنْ", ">an": "أَنْ", "man": "مَنْ", "kam": "كَمْ", "naEam": "نَعَمْ",
     "la`kin": "لٰكِنْ", "<il~am": "إِلَّمْ", "<in~": "إِنَّ", ">an~": "أَنَّ", "vum~": "ثُمَّ",
@@ -291,7 +299,7 @@ def marfu_ar(ar, munsarif, plural=False):
         return (ar[:-2] if ar[-2] == FATHA else ar[:-1]) + TANWIN_F + "ى"
     if ar.endswith("\u0650ي") and smj(ar):
         return ar[:-2] + TANWIN_K  # manqush ghairu munsharif: tanwin 'iwadh (نَوَاصٍ، ثَمَانٍ)
-    if ar.endswith("\u0650ي") and munsarif and not plural:
+    if ar.endswith("\u0650ي") and munsarif:
         return ar[:-2] + TANWIN_K  # manqush nakirah: ya' dibuang, tanwin kasrah (وَادٍ، دَاعٍ، ثَانٍ)
     if ar.startswith("ال"):
         return ar + DAMMA  # ma'rifah dengan al-: اللّٰهُ، الْيَسَعُ

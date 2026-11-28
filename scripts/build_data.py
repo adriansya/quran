@@ -161,6 +161,10 @@ def plural_forms(L, lemma_ar):
         out[ar]["n"] += n
         out[ar]["tan"] += L["pl_tan"][st]
         out[ar]["gf"] += L["pl_gf"][st]
+    # أَأٰلِهَة (hamzah istifham + آلِهَة) bukan bentuk jamak tersendiri
+    for a in list(out):
+        if a.startswith("أَا") and ("آ" + a[3:]) in out:
+            out["آ" + a[3:]]["n"] += out.pop(a)["n"]
     # لَيَال & لَيَالِي -> satu (bentuk manqush lengkap)
     for a in list(out):
         if a + "ي" in out or a + "ِي" in out:
@@ -181,6 +185,11 @@ def plural_forms(L, lemma_ar):
             item["mamnu"] = True
         res.append(item)
     return res
+
+
+RASM_FIX = {"SaY`Hib": "صَٰحِب"}
+MUDHARI_FIX = {"jaA^'a": "يَجِيءُ", ">anzala": "يُنْزِلُ", "mak~a": "يُمَكِّنُ", ">aAxa*a": "يُؤَاخِذُ",
+               "saqaY`": "يَسْقِي", "EaraDa": "يَعْرِضُ", "Hamiya": "يَحْمَى"}
 
 
 def marfu_mudhari(m, root):
@@ -212,14 +221,18 @@ def sharaf_info(k, L, pos, ar, notes):
     if pos == "V":
         form = L["vform"].most_common(1)[0][0] if L["vform"] else "I"
         w = CANON.verb_wazan(form, k)
+        if L["root"] and len(L["root"]) == 4 and form in (None, "I"):
+            w = "فَعْلَلَ"  # fi'il ruba'i mujarrad (وَسْوَسَ، زَلْزَلَ)
         if w:
             info["wazan"] = w
+        if k in MUDHARI_FIX and not L["impf"]:
+            info["mudhari"] = MUDHARI_FIX[k]
         if L["impf"]:
             # utamakan bentuk marfu' (يَدْعُو، يَأْتِي، يَرَى), bukan majzum (يَدْعُ، يَأْتِ)
             ranked = sorted(L["impf"].items(), key=lambda x: (
                 0 if re.search(r"(iy|uw|aY`?|aA)$", x[0]) else 1 if x[0].endswith("u") else 2, -x[1]))
             cands = [x[0] for x in ranked]
-            info["mudhari"] = marfu_mudhari(std(re.sub(r"^(.)~", r"\1", cands[0])), L["root"] or "")
+            info["mudhari"] = MUDHARI_FIX.get(k) or marfu_mudhari(std(re.sub(r"^(.)~", r"\1", cands[0])), L["root"] or "")
     elif pos in ("N", "ADJ"):
         pl = plural_forms(L, ar)
         if pl:
@@ -285,11 +298,32 @@ VOWEL_I = {}
 
 LEAD_CONJ = re.compile(r"^(?:dan|maka|lalu|kemudian|sungguh|dan sungguh|maka sungguh|dan sesungguhnya)\s+(?=\S)", re.I)
 LEAD_ART = re.compile(r"^(?:suatu|seorang|sebuah|para|beberapa)\s+(?=\S)")
-LEAD_PRON = re.compile(r"^(?:ia|dia|Dia|mereka|kamu|engkau|Engkau|kami|Kami|aku|kalian|telah|sungguh|benar-benar|akan|yang)\s+(?=\S)")
+LEAD_PREP = re.compile(r"^(?:dengan|bagi|kepada|pada|dari|untuk|terhadap|dalam|oleh|dengan/dalam|di antara)\s+(?=\S)", re.I)
+LEAD_PRON = re.compile(r"^(?:\([^)]*\)|maka/lalu|maka/karena itu|keduanya|ia|dia|Dia|mereka|Mereka|kamu|Kamu|engkau|Engkau|kami|Kami|aku|Aku|kalian|Kalian|telah|sungguh|benar-benar|akan|yang|"
+                       r"apakah|karena|supaya|agar|untuk|hendak|hendaklah|hendaknya|niscaya|tentu|pasti)\s+(?=\S)")
+TRAIL_OBJ = re.compile(r"\s+(?:keduanya|kepada keduanya|mereka|kamu|kami|kalian|dia|engkau|aku|kita|Kami|Aku|Mu|Ku|Nya|dengannya|kepadanya|kepadamu|kepada mereka|"
+                       r"kepada kami|kepadaku|kepada kamu|bagimu|bagi mereka|atasnya|padanya|olehmu|itu)$")
+SUFFIX = re.compile(r"(?<=\w{4})(?:-?Nya|-?nya|-?Mu|mu|-?Ku|ku)$")
+KEEP_SUFFIX = re.compile(r"^(?:ber|men|mem|meng|me|di|ter|ke)?(ilmu|tamu|jamu|semu|temu|ibu|abu|baku|buku|kuku|laku|saku|paku|suku|rindu|madu|biru|batu|satu|ragu|"
+                         r"tahu|bahu|kayu|pintu|waktu|tentu|malu|palu|lalu|bulu|hulu|debu|ratu|dahulu|tunggu|punya|bertemu|seminggu|"
+                         r"kubu|candu|dungu|liku|jitu|perlu|setuju|bambu|guru|baru|haru|seluruhnya|sesungguhnya|selamanya|semuanya|"
+                         r"keduanya|sebenarnya|seharusnya|biasanya|lainnya|akhirnya|sendirinya|selanjutnya|sebelumnya|sesudahnya|"
+                         r"setelahnya|sepenuhnya|seandainya|sekiranya|nyanya|ramu|jemu|hantu|merdu|tanya|hanya|punya|adakalanya|bahwasanya|kaku|beku|siku|benalu|semu|kelabu|minyak)$", re.I)
+
+
+def _strip_suffix(m):
+    words = m.split(" ")
+    last = words[-1]
+    keep = (KEEP_SUFFIX.search(last) or last.startswith(("Maha", "maha")) or re.match(r"(?i)^se.+nya$", last)
+            or re.match(r"(?i)^(mengaku|menanya|engaku|henti-hentinya)$", last))
+    if not keep:
+        words[-1] = SUFFIX.sub("", last)
+    return " ".join(w for w in words if w)
 
 
 def clean_mean(m, verb):
-    """Rapikan arti per kata menjadi arti kamus: buang 'dan/maka' (dari وَ/فَ) dan, untuk fi'il, kata ganti pelaku."""
+    """Rapikan arti per kata menjadi arti kamus: buang 'dan/maka' (dari وَ/فَ), kata depan & dhamir (isim),
+    pelaku/objek & kata bantu (fi'il)."""
     m = (m or "").strip()
     prev = None
     while prev != m:
@@ -297,9 +331,27 @@ def clean_mean(m, verb):
         m = LEAD_CONJ.sub("", m)
         if verb:
             m = LEAD_PRON.sub("", m)
+            m = TRAIL_OBJ.sub("", m)
         else:
             m = LEAD_ART.sub("", m)
-    return m
+            m = LEAD_PREP.sub("", m)
+            m = TRAIL_OBJ.sub("", m)
+    if not verb or " " in m:
+        m = _strip_suffix(m)
+    else:
+        m = _strip_suffix(m)
+    return m.strip(" ,;")
+
+
+def bad_mean(m, verb):
+    """Arti yang sebaiknya tidak dijadikan arti utama (perintah, pasif, masih berdhamir)."""
+    if verb and (re.search(r"lah$", m) and not re.search(r"(salah|telah|olah)$", m)):
+        return 1
+    if verb and re.match(r"di[a-z]", m) and not re.match(r"(diam|diri)", m):
+        return 1
+    if re.search(r"\b(mereka|kamu|kami|kalian|engkau)\b", m):
+        return 1
+    return 0
 
 
 MEAN_FIX = {}  # diisi dari scripts/mean_fix.py (koreksi manual arti kamus)
@@ -313,6 +365,8 @@ SPLIT = {
     "{l~a*iY": [(r"\*iyn", "{l~a*iyna"), (r"\*aAn|\*ayon", "{l~a*aAni"), (r"a`(ti|_#i)", "{l~a`tiY"),
                 (r"l~ati", "{l~atiY"), (r"", "{l~a*iY")],
     "*a`lik": [(r"^til", "tiloka"), (r"", "*a`lik")],
+    # Corpus menggabungkan عِظَام (tulang, jamak عَظْم) ke عَظِيم (agung)
+    "EaZiym": [(r"^EiZa", "EaZom"), (r"", "EaZiym")],
     "ha`*aA": [(r"&ulaA", "ha`&ulaA'i"), (r"\*ihi", "ha`*ihi"), (r"", "ha`*aA")],
 }
 BENTUK = {
@@ -522,12 +576,17 @@ def main():
         # arti dari bentuk kamus (madhi 3MS / isim mufrad tanpa dhamir) bila cukup sering; sisanya cara lama
         dict_c = [(m, c) for m, c in L["dict"].most_common(3) if m and (c >= 2 or d_all <= 2)]
         rest = L["plain"].most_common(8) or [(clean_mean(m, isv), c) for m, c in L["core"].most_common(3) + L["mean"].most_common(8)]
-        cands = dict_c + rest
+        # arti bersih (bukan perintah/pasif/berdhamir) didahulukan; urutan frekuensi tetap di dalam tiap kelompok
+        cands = sorted(dict_c + rest, key=lambda mc: bad_mean(mc[0], isv))
+        seen_l = set()
         for i, (m, c) in enumerate(cands):
-            if i and i >= len(dict_c) and c < max(2, 0.03 * n_all):  # buang arti jarang/tidak selaras
+            if means and c < max(2, 0.03 * n_all) and (m, c) not in dict_c:  # buang arti jarang/tidak selaras
                 continue
-            if m and m not in means:
+            if means and bad_mean(m, isv):
+                continue  # arti tambahan yang masih berdhamir/perintah/pasif tidak dipakai
+            if m and m.lower() not in seen_l:
                 means.append(m)
+                seen_l.add(m.lower())
         means = MEAN_FIX.get(k) or means[:4]
         kind, _, key = k.partition(":") if ":" in k and k.split(":")[0] in POS_ID or k.startswith("INL:") else ("", "", k)
         if kind == "PRON" and key in PRONOUNS:
@@ -575,7 +634,7 @@ def main():
         elif kind:
             rasm = ar
         else:
-            rasm = bw2ar(display) if attested else ar
+            rasm = RASM_FIX.get(k) or (bw2ar(display) if attested else ar)
         item = {
             "id": lid[k],
             "ar": ar,
