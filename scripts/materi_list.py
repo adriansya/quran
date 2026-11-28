@@ -1,4 +1,4 @@
-"""Daftar kata materi per jenjang, dikelompokkan per kelas & jenis.
+"""Daftar kata materi per jenjang, dikelompokkan per kelas & jenis kata (bahasa Indonesia).
 
     python3 materi_list.py ISIM FIIL HARF [JUDUL] [+bw,+bw ...]
     contoh: python3 materi_list.py 90 30 30 "Jenjang 70%" +hal,+kayof  ->  materi/kata-90-30-30.md
@@ -27,28 +27,54 @@ def pct(xs):
     return f"{sum(x['n'] for x in xs) / TOTAL * 100:.1f}".replace(".", ",")
 
 
-# Isim diringkas jadi 5 kelompok supaya mudah dipahami
-ISIM_GROUP = {
-    "Isim dhamir": "Kata ganti & kata tunjuk", "Isim isyarah": "Kata ganti & kata tunjuk",
-    "Isim maushul": "Kata ganti & kata tunjuk", "Isim istifham": "Kata ganti & kata tunjuk",
-    "Isim 'alam": "Allah, Asmaul Husna & nama", "Shighah mubalaghah": "Allah, Asmaul Husna & nama",
-    "Zharaf zaman": "Keterangan waktu & tempat", "Zharaf makan": "Keterangan waktu & tempat",
-    "Isim fa'il": "Kata sifat & pelaku", "Isim maf'ul": "Kata sifat & pelaku",
-    "Shifah musyabbahah": "Kata sifat & pelaku", "Isim tafdhil": "Kata sifat & pelaku",
+# Kelompok berdasarkan jenis kata dalam bahasa Indonesia (bukan istilah nahwu).
+# Urutan di sini = urutan tampil. Nilai: (nama kelompok, contoh arti).
+GROUPS = {
+    "h": [("Kata sambung", "dan, lalu, atau, bahwa, kecuali, agar"), ("Kata depan", "dari, di, ke, untuk, dengan"),
+          ("Kata penegas", "sesungguhnya, sungguh"), ("Kata ingkar", "tidak, belum, tidak akan"),
+          ("Kata tanya", "apakah, bagaimana"), ("Kata syarat", "jika, seandainya"),
+          ("Kata seru & keterangan", "wahai, akan")],
+    "i": [("Kata ganti orang", "dia, kamu, kami, mereka"), ("Kata tunjuk", "ini, itu"),
+          ("Kata penghubung", "yang, siapa, apa"), ("Nama", "Allah, nama nabi, dll."),
+          ("Sifat-sifat Allah", "Maha …"), ("Keterangan waktu", "ketika, sebelum, sesudah"),
+          ("Keterangan tempat", "antara, di sisi, bersama"), ("Kata sifat", "baik, besar, pertama, lebih …"),
+          ("Kata jumlah", "setiap, sebagian, selain"), ("Kata seru", "wahai"),
+          ("Kata benda: orang & makhluk", "Tuhan, rasul, manusia, hamba"),
+          ("Kata benda: benda & hal", "bumi, hari, kitab, rahmat")],
+    "f": [("Kata kerja", "berkata, mengetahui, menjadikan"), ("Kata kerja bantu", "adalah, bukan")],
 }
-ISIM_NOTE = {
-    "Kata ganti & kata tunjuk": ("ضَمِيرٌ، إِشَارَةٌ، مَوْصُولٌ", "dia, kamu, ini, itu, yang …"),
-    "Allah, Asmaul Husna & nama": ("عَلَمٌ، أَسْمَاءُ اللّٰهِ الْحُسْنَى", "nama diri dan sifat-sifat Allah"),
-    "Keterangan waktu & tempat": ("ظَرْفُ زَمَانٍ وَمَكَانٍ", "ketika, sebelum, antara, di sisi …"),
-    "Kata sifat & pelaku": ("اسْمُ فَاعِلٍ، صِفَةٌ، تَفْضِيلٌ", "orang yang …, besar, lebih …"),
-    "Kata benda": ("اسْمٌ، مَصْدَرٌ", "benda, tempat, perbuatan (masdar)"),
+BY_JENIS = {
+    "Harf 'athf": "Kata sambung", "Harf idhrab": "Kata sambung", "Harf mashdari": "Kata sambung",
+    "Adat istitsna'": "Kata sambung", "Harf istidrak": "Kata sambung", "Harf tafshil": "Kata sambung",
+    "Harf jar": "Kata depan", "Harf taukid": "Kata penegas", "Harf tahqiq": "Kata penegas",
+    "Harf nafy": "Kata ingkar", "Harf jazm": "Kata ingkar", "Harf istifham": "Kata tanya", "Adat syarth": "Kata syarat",
+    "Harf nida'": "Kata seru & keterangan", "Harf istiqbal": "Kata seru & keterangan",
+    "Isim dhamir": "Kata ganti orang", "Isim isyarah": "Kata tunjuk", "Isim maushul": "Kata penghubung",
+    "Isim istifham": "Kata tanya", "Isim 'alam": "Nama", "Shighah mubalaghah": "Sifat-sifat Allah",
+    "Zharaf zaman": "Keterangan waktu", "Zharaf makan": "Keterangan tempat",
+    "Isim tafdhil": "Kata sifat", "Fi'il naqish": "Kata kerja bantu",
 }
-ISIM_ORDER = ["Kata ganti & kata tunjuk", "Allah, Asmaul Husna & nama", "Keterangan waktu & tempat",
-              "Kata sifat & pelaku", "Kata benda"]
-JN = {"Isim dhamir": "dhamir", "Isim isyarah": "isyarah", "Isim maushul": "maushul", "Isim istifham": "istifham",
-      "Isim 'alam": "'alam", "Shighah mubalaghah": "Asmaul Husna", "Isim": "isim", "Masdar": "masdar", "Zharaf zaman": "waktu",
-      "Zharaf makan": "tempat", "Isim fa'il": "fa'il", "Isim maf'ul": "maf'ul", "Shifah musyabbahah": "musyabbahah",
-      "Isim tafdhil": "tafdhil"}
+BY_BW = {  # pengecualian per kata
+    "<in~": "Kata penegas", ">an~": "Kata sambung", "laEal~": "Kata sambung",
+    "Sa`liH": "Kata sifat", "m~ubiyn": "Kata sifat", "EaZiym": "Kata sifat", "xayor": "Kata sifat", "A^xir": "Kata sifat",
+    "kul~": "Kata jumlah", "baEoD": "Kata jumlah", "gayor": "Kata jumlah", ">ay~uhaA": "Kata seru",
+    "rab~": "Kata benda: orang & makhluk", "qawom": "Kata benda: orang & makhluk", "rasuwl": "Kata benda: orang & makhluk",
+    "n~aAs": "Kata benda: orang & makhluk", "mu&omin": "Kata benda: orang & makhluk", "kaAfir": "Kata benda: orang & makhluk",
+    "ZaAlim": "Kata benda: orang & makhluk", "<ila`h": "Kata benda: orang & makhluk", "{bon": "Kata benda: orang & makhluk",
+    "Eabod": "Kata benda: orang & makhluk", ">ahol": "Kata benda: orang & makhluk", ">abN": "Kata benda: orang & makhluk",
+    "SaY`Hib": "Kata benda: orang & makhluk", "malak": "Kata benda: orang & makhluk", "waliY~": "Kata benda: orang & makhluk",
+    ">ax": "Kata benda: orang & makhluk", "*uw": "Kata benda: orang & makhluk", "nafos": "Kata benda: orang & makhluk",
+}
+
+
+def group_of(x):
+    if x["bw"] in BY_BW:
+        return BY_BW[x["bw"]]
+    if x["jenis"][0] in BY_JENIS:
+        return BY_JENIS[x["jenis"][0]]
+    return {"h": "Kata sambung", "i": "Kata benda: benda & hal", "f": "Kata kerja"}[x["k"]]
+
+
 CLASS = [("h", "Harf", "حَرْفٌ"), ("i", "Isim", "اسْمٌ"), ("f", "Fi'il", "فِعْلٌ")]
 
 out = [f"# Materi {judul}", "",
@@ -64,33 +90,23 @@ out += ["", "Keterangan kolom:",
 
 for k, name, ar in CLASS:
     xs = pick[k]
-    g = collections.OrderedDict()
+    g = collections.defaultdict(list)
     for x in xs:
-        key = ISIM_GROUP.get(x["jenis"][0], "Kata benda") if k == "i" else x["jenis"][0]
-        g.setdefault(key, []).append(x)
-    if k == "i":
-        keys = [j for j in ISIM_ORDER if j in g] + [j for j in g if j not in ISIM_ORDER]
-    else:
-        keys = sorted(g, key=lambda j: -sum(x["n"] for x in g[j]))
+        g[group_of(x)].append(x)
     out += [f"## {name} {ar} ({len(xs)} kata · {pct(xs)}%)", ""]
-    for j in keys:
-        ys = g[j]
-        if k == "i":  # di dalam kelompok: per jenis (urutan JN), lalu dari yang paling sering
-            ys = sorted(ys, key=lambda x: (list(JN).index(x["jenis"][0]) if x["jenis"][0] in JN else 99, x["id"]))
-        if k == "i":
-            ar_j, note = ISIM_NOTE[j]
-            head = [f"### {j} ({len(ys)} kata · {pct(ys)}%)", "", f"{ar_j} — {note}", ""]
-        else:
-            head = [f"### {j} {ys[0]['jenis'][1]} ({len(ys)} kata · {pct(ys)}%)", ""]
-        out += head + ["| No. | Kata | Arti | Jenis | × |" if k == "i" else "| No. | Kata | Arti | × |",
-                       "|---|---|---|---|---|" if k == "i" else "|---|---|---|---|"]
+    for j, contoh in GROUPS[k]:
+        ys = g.pop(j, [])
+        if not ys:
+            continue
+        out += [f"### {j} ({len(ys)} kata · {pct(ys)}%)", "", f"_{contoh}_", "",
+                "| No. | Kata | Arti | × |", "|---|---|---|---|"]
         for x in ys:
             w = x["ar"] + ("ـ" if x.get("menempel") else "")
             if x.get("mudhari"):
                 w += " – " + x["mudhari"]
-            jn = f" {JN.get(x['jenis'][0], x['jenis'][0])} |" if k == "i" else ""
-            out.append(f"| {x['id'] + 1} | {w} | {'; '.join(x['mean'][:3])} |{jn} {str(f"{x['n']:,}").replace(",", ".")} |")
+            out.append(f"| {x['id'] + 1} | {w} | {'; '.join(x['mean'][:3])} | {str(f"{x['n']:,}").replace(",", ".")} |")
         out.append("")
+    assert not g, f"kelompok tak terdaftar: {list(g)}"
 
 os.makedirs(os.path.join(ROOT, "materi"), exist_ok=True)
 path = os.path.join(ROOT, "materi", f"kata-{ni}-{nf}-{nh}.md")

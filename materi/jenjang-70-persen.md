@@ -16,17 +16,26 @@ Keterangan kolom:
 
 ## Harf حَرْفٌ (32 kata · 36,7%)
 
-### Harf 'athf حَرْفُ عَطْفٍ (5 kata · 13,7%)
+### Kata sambung (10 kata · 15,6%)
+
+_dan, lalu, atau, bahwa, kecuali, agar_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
 | 1 | وَـ | dan; demi (sumpah); sedangkan | 9.594 |
 | 3 | فَـ | maka; lalu; karena itu | 3.001 |
+| 21 | إِلَّا | kecuali; melainkan | 663 |
+| 23 | أَنْ | bahwa; agar; untuk | 625 |
+| 37 | أَنَّ | bahwa; bahwasanya | 362 |
 | 42 | ثُمَّ | kemudian | 338 |
 | 51 | أَوْ | atau | 280 |
 | 94 | أَمْ | ataukah; atau; apakah | 137 |
+| 102 | لَعَلَّ | agar; semoga; barangkali | 129 |
+| 106 | بَلْ | bahkan; tetapi; sebenarnya | 127 |
 
-### Harf jar حَرْفُ جَرٍّ (9 kata · 13,6%)
+### Kata depan (9 kata · 13,6%)
+
+_dari, di, ke, untuk, dengan_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
@@ -40,15 +49,19 @@ Keterangan kolom:
 | 47 | كَـ | seperti; bagaikan | 295 |
 | 92 | حَتَّى | sampai; hingga; sehingga | 142 |
 
-### Harf nashb حَرْفُ نَصْبٍ (3 kata · 2,2%)
+### Kata penegas (3 kata · 3,2%)
+
+_sesungguhnya, sungguh_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
 | 10 | إِنَّ | sesungguhnya | 1.682 |
-| 37 | أَنَّ | bahwa; bahwasanya | 362 |
-| 102 | لَعَلَّ | agar; semoga; barangkali | 129 |
+| 15 | لَـ | sungguh; benar-benar | 1.001 |
+| 31 | قَدْ | sungguh; telah; kadang-kadang | 406 |
 
-### Harf nafy حَرْفُ نَفْيٍ (3 kata · 2,2%)
+### Kata ingkar (3 kata · 2,2%)
+
+_tidak, belum, tidak akan_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
@@ -56,20 +69,9 @@ Keterangan kolom:
 | 40 | لَمْ | tidak; belum | 353 |
 | 124 | لَنْ | tidak akan | 104 |
 
-### Harf taukid حَرْفُ تَوْكِيدٍ (1 kata · 1,0%)
+### Kata tanya (3 kata · 0,7%)
 
-| No. | Kata | Arti | × |
-|---|---|---|---|
-| 15 | لَـ | sungguh; benar-benar | 1.001 |
-
-### Adat syarth أَدَاةُ شَرْطٍ (2 kata · 0,9%)
-
-| No. | Kata | Arti | × |
-|---|---|---|---|
-| 20 | إِنْ | jika; tidak (lain) | 698 |
-| 67 | لَوْ | seandainya; sekiranya; walaupun | 200 |
-
-### Harf istifham حَرْفُ اسْتِفْهَامٍ (3 kata · 0,7%)
+_apakah, bagaimana_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
@@ -77,210 +79,240 @@ Keterangan kolom:
 | 129 | هَلْ | apakah | 93 |
 | 149 | كَيْفَ | bagaimana | 83 |
 
-### Adat istitsna' أَدَاةُ اسْتِثْنَاءٍ (1 kata · 0,7%)
+### Kata syarat (2 kata · 0,9%)
+
+_jika, seandainya_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
-| 21 | إِلَّا | kecuali; melainkan | 663 |
+| 20 | إِنْ | jika; tidak (lain) | 698 |
+| 67 | لَوْ | seandainya; sekiranya; walaupun | 200 |
 
-### Harf mashdari حَرْفٌ مَصْدَرِيٌّ (1 kata · 0,6%)
+### Kata seru & keterangan (2 kata · 0,5%)
 
-| No. | Kata | Arti | × |
-|---|---|---|---|
-| 23 | أَنْ | bahwa; agar; untuk | 625 |
-
-### Harf tahqiq حَرْفُ تَحْقِيقٍ (1 kata · 0,4%)
-
-| No. | Kata | Arti | × |
-|---|---|---|---|
-| 31 | قَدْ | sungguh; telah; kadang-kadang | 406 |
-
-### Harf nida' حَرْفُ نِدَاءٍ (1 kata · 0,4%)
+_wahai, akan_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
 | 38 | يَاـ | wahai | 361 |
-
-### Harf idhrab حَرْفُ إِضْرَابٍ (1 kata · 0,1%)
-
-| No. | Kata | Arti | × |
-|---|---|---|---|
-| 106 | بَلْ | bahkan; tetapi; sebenarnya | 127 |
-
-### Harf istiqbal حَرْفُ اسْتِقْبَالٍ (1 kata · 0,1%)
-
-| No. | Kata | Arti | × |
-|---|---|---|---|
 | 111 | سَـ | akan | 119 |
 
 ## Isim اسْمٌ (90 kata · 24,7%)
 
-### Kata ganti & kata tunjuk (18 kata · 8,6%)
+### Kata ganti orang (11 kata · 3,2%)
 
-ضَمِيرٌ، إِشَارَةٌ، مَوْصُولٌ — dia, kamu, ini, itu, yang …
+_dia, kamu, kami, mereka_
 
-| No. | Kata | Arti | Jenis | × |
-|---|---|---|---|---|
-| 17 | هُمْ | mereka, -nya (mereka) | dhamir | 906 |
-| 22 | هُ | dia (laki-laki), -nya | dhamir | 637 |
-| 26 | هُوَ | dia (laki-laki) | dhamir | 481 |
-| 33 | كُمْ | kalian, -mu (jamak) | dhamir | 395 |
-| 97 | أَنْتُمْ | kalian | dhamir | 135 |
-| 107 | هَا | dia (perempuan), -nya | dhamir | 125 |
-| 136 | نَا | kami, -kami | dhamir | 88 |
-| 141 | نَحْنُ | kami | dhamir | 86 |
-| 154 | كَ | kamu, -mu | dhamir | 82 |
-| 155 | أَنْتَ | kamu, engkau | dhamir | 81 |
-| 159 | ي | aku, -ku | dhamir | 78 |
-| 27 | ذٰلِكَ | itu; demikian itu | isyarah | 480 |
-| 65 | هٰذَا | ini | isyarah | 225 |
-| 66 | أُولٰئِكَ | mereka itu; itu (jamak) | isyarah | 204 |
-| 7 | مَا | apa; apa yang; tidak | maushul | 2.177 |
-| 14 | الَّذِينَ | orang-orang yang; yang (jamak) | maushul | 1.080 |
-| 18 | مَنْ | siapa; barang siapa; orang yang | maushul | 824 |
-| 46 | الَّذِي | yang; orang yang | maushul | 304 |
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 17 | هُمْ | mereka, -nya (mereka) | 906 |
+| 22 | هُ | dia (laki-laki), -nya | 637 |
+| 26 | هُوَ | dia (laki-laki) | 481 |
+| 33 | كُمْ | kalian, -mu (jamak) | 395 |
+| 97 | أَنْتُمْ | kalian | 135 |
+| 107 | هَا | dia (perempuan), -nya | 125 |
+| 136 | نَا | kami, -kami | 88 |
+| 141 | نَحْنُ | kami | 86 |
+| 154 | كَ | kamu, -mu | 82 |
+| 155 | أَنْتَ | kamu, engkau | 81 |
+| 159 | ي | aku, -ku | 78 |
 
-### Allah, Asmaul Husna & nama (8 kata · 3,6%)
+### Kata tunjuk (3 kata · 0,9%)
 
-عَلَمٌ، أَسْمَاءُ اللّٰهِ الْحُسْنَى — nama diri dan sifat-sifat Allah
+_ini, itu_
 
-| No. | Kata | Arti | Jenis | × |
-|---|---|---|---|---|
-| 5 | اللّٰهُ | Allah | 'alam | 2.699 |
-| 95 | مُوسَى | Musa | 'alam | 136 |
-| 135 | شَيْطَانٌ | setan | 'alam | 88 |
-| 78 | عَلِيمٌ | Maha Mengetahui; berilmu | Asmaul Husna | 163 |
-| 114 | رَحِيمٌ | Maha Penyayang | Asmaul Husna | 116 |
-| 125 | عَزِيزٌ | Maha Perkasa; mulia; berat (terasa berat) | Asmaul Husna | 101 |
-| 127 | حَكِيمٌ | Maha Bijaksana; bijaksana | Asmaul Husna | 97 |
-| 132 | غَفُورٌ | Maha Pengampun | Asmaul Husna | 91 |
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 27 | ذٰلِكَ | itu; demikian itu | 480 |
+| 65 | هٰذَا | ini | 225 |
+| 66 | أُولٰئِكَ | mereka itu; itu (jamak) | 204 |
 
-### Keterangan waktu & tempat (9 kata · 2,1%)
+### Kata penghubung (4 kata · 4,5%)
 
-ظَرْفُ زَمَانٍ وَمَكَانٍ — ketika, sebelum, antara, di sisi …
+_yang, siapa, apa_
 
-| No. | Kata | Arti | Jenis | × |
-|---|---|---|---|---|
-| 30 | إِذَا | apabila; ketika | waktu | 409 |
-| 60 | قَبْلَ | sebelum | waktu | 242 |
-| 62 | إِذْ | ketika; (ingatlah) ketika | waktu | 239 |
-| 68 | بَعْدَ | sesudah; setelah | waktu | 199 |
-| 82 | لَمَّا | ketika; tatkala; setelah | waktu | 156 |
-| 56 | بَيْنَ | antara | tempat | 266 |
-| 69 | عِنْدَ | di sisi; pada | tempat | 197 |
-| 79 | مَعَ | bersama; beserta | tempat | 159 |
-| 89 | دُونَ | selain; di bawah; tanpa | tempat | 144 |
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 7 | مَا | apa; apa yang; tidak | 2.177 |
+| 14 | الَّذِينَ | orang-orang yang; yang (jamak) | 1.080 |
+| 18 | مَنْ | siapa; barang siapa; orang yang | 824 |
+| 46 | الَّذِي | yang; orang yang | 304 |
 
-### Kata sifat & pelaku (10 kata · 1,3%)
+### Nama (3 kata · 3,0%)
 
-اسْمُ فَاعِلٍ، صِفَةٌ، تَفْضِيلٌ — orang yang …, besar, lebih …
+_Allah, nama nabi, dll._
 
-| No. | Kata | Arti | Jenis | × |
-|---|---|---|---|---|
-| 64 | مُؤْمِنٌ | orang beriman; mukmin | fa'il | 230 |
-| 80 | كَافِرٌ | orang kafir; kafir | fa'il | 158 |
-| 98 | ظَالِمٌ | orang zalim; zalim | fa'il | 135 |
-| 105 | صَالِحٌ | saleh; baik; amal saleh | fa'il | 127 |
-| 112 | مُبِينٌ | yang nyata; jelas; yang menjelaskan | fa'il | 119 |
-| 115 | دُنْيَا | dunia; yang dekat | musyabbahah | 115 |
-| 119 | عَظِيمٌ | besar; agung | musyabbahah | 107 |
-| 143 | وَلِيٌّ | pelindung; penolong; wali | musyabbahah | 86 |
-| 152 | أَوَّلُ | pertama; yang terdahulu | tafdhil | 82 |
-| 156 | أَكْثَرُ | lebih banyak; kebanyakan | tafdhil | 80 |
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 5 | اللّٰهُ | Allah | 2.699 |
+| 95 | مُوسَى | Musa | 136 |
+| 135 | شَيْطَانٌ | setan | 88 |
 
-### Kata benda (45 kata · 9,2%)
+### Sifat-sifat Allah (5 kata · 0,6%)
 
-اسْمٌ، مَصْدَرٌ — benda, tempat, perbuatan (masdar)
+_Maha …_
 
-| No. | Kata | Arti | Jenis | × |
-|---|---|---|---|---|
-| 16 | رَبٌّ | Tuhan; pemelihara | isim | 975 |
-| 29 | أَرْضٌ | bumi; tanah; negeri | isim | 461 |
-| 32 | يَوْمٌ | hari | isim | 405 |
-| 34 | قَوْمٌ | kaum | isim | 383 |
-| 35 | آيَةٌ | tanda; ayat; bukti | isim | 382 |
-| 39 | كُلٌّ | setiap; semua; masing-masing | isim | 359 |
-| 43 | رَسُولٌ | rasul; utusan | isim | 332 |
-| 44 | عَذَابٌ | azab; siksa | isim | 322 |
-| 45 | سَمَاءٌ | langit; hujan | isim | 310 |
-| 48 | نَفْسٌ | jiwa; diri; seseorang | isim | 295 |
-| 50 | شَيْءٌ | sesuatu; sedikit pun | isim | 283 |
-| 58 | كِتَابٌ | kitab; tulisan; ketetapan | isim | 260 |
-| 59 | حَقٌّ | kebenaran; benar; hak | isim | 247 |
-| 61 | نَاسٌ | manusia | isim | 241 |
-| 70 | خَيْرٌ | kebaikan; lebih baik; baik | isim | 188 |
-| 74 | سَبِيلٌ | jalan | isim | 176 |
-| 76 | أَمْرٌ | urusan; perintah; perkara | isim | 166 |
-| 81 | بَعْضٌ | sebagian | isim | 157 |
-| 83 | آخِرٌ | akhir; akhirat; yang terakhir | isim | 155 |
-| 84 | أَيُّهَا | wahai; hai | isim | 153 |
-| 85 | إِلٰهٌ | tuhan; sesembahan | isim | 147 |
-| 86 | غَيْرٌ | selain; bukan; tanpa | isim | 147 |
-| 87 | جَنَّةٌ | surga; kebun | isim | 147 |
-| 88 | نَارٌ | api; neraka | isim | 145 |
-| 91 | ابْنٌ | anak (laki-laki); putra; bani (keturunan) | isim | 143 |
-| 99 | قَلْبٌ | hati | isim | 132 |
-| 100 | عَبْدٌ | hamba | isim | 131 |
-| 103 | أَهْلٌ | penduduk; keluarga; ahli | isim | 127 |
-| 110 | يَدٌ | tangan | isim | 120 |
-| 113 | ذُو | yang mempunyai; pemilik | isim | 116 |
-| 117 | أَبٌ | bapak | isim | 110 |
-| 122 | أَجْرٌ | pahala; upah; balasan | isim | 105 |
-| 131 | دِينٌ | agama; pembalasan; ketaatan | isim | 92 |
-| 133 | صَاحِبٌ | teman; pemilik; penghuni | isim | 90 |
-| 138 | مَلَكٌ | malaikat | isim | 88 |
-| 139 | مَثَلٌ | perumpamaan; contoh; sifat | isim | 88 |
-| 142 | مَالٌ | harta | isim | 86 |
-| 146 | فَضْلٌ | karunia; keutamaan | isim | 84 |
-| 147 | لَيْلٌ | malam | isim | 84 |
-| 148 | صَلَاةٌ | salat; doa | isim | 83 |
-| 153 | أَخٌ | saudara (laki-laki) | isim | 82 |
-| 116 | رَحْمَةٌ | rahmat; kasih sayang | masdar | 114 |
-| 123 | عِلْمٌ | ilmu; pengetahuan | masdar | 105 |
-| 130 | قَوْلٌ | perkataan; ucapan | masdar | 93 |
-| 144 | هُدًى | petunjuk | masdar | 85 |
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 78 | عَلِيمٌ | Maha Mengetahui; berilmu | 163 |
+| 114 | رَحِيمٌ | Maha Penyayang | 116 |
+| 125 | عَزِيزٌ | Maha Perkasa; mulia; berat (terasa berat) | 101 |
+| 127 | حَكِيمٌ | Maha Bijaksana; bijaksana | 97 |
+| 132 | غَفُورٌ | Maha Pengampun | 91 |
+
+### Keterangan waktu (5 kata · 1,3%)
+
+_ketika, sebelum, sesudah_
+
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 30 | إِذَا | apabila; ketika | 409 |
+| 60 | قَبْلَ | sebelum | 242 |
+| 62 | إِذْ | ketika; (ingatlah) ketika | 239 |
+| 68 | بَعْدَ | sesudah; setelah | 199 |
+| 82 | لَمَّا | ketika; tatkala; setelah | 156 |
+
+### Keterangan tempat (4 kata · 0,8%)
+
+_antara, di sisi, bersama_
+
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 56 | بَيْنَ | antara | 266 |
+| 69 | عِنْدَ | di sisi; pada | 197 |
+| 79 | مَعَ | bersama; beserta | 159 |
+| 89 | دُونَ | selain; di bawah; tanpa | 144 |
+
+### Kata sifat (7 kata · 0,9%)
+
+_baik, besar, pertama, lebih …_
+
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 70 | خَيْرٌ | kebaikan; lebih baik; baik | 188 |
+| 83 | آخِرٌ | akhir; akhirat; yang terakhir | 155 |
+| 105 | صَالِحٌ | saleh; baik; amal saleh | 127 |
+| 112 | مُبِينٌ | yang nyata; jelas; yang menjelaskan | 119 |
+| 119 | عَظِيمٌ | besar; agung | 107 |
+| 152 | أَوَّلُ | pertama; yang terdahulu | 82 |
+| 156 | أَكْثَرُ | lebih banyak; kebanyakan | 80 |
+
+### Kata jumlah (3 kata · 0,7%)
+
+_setiap, sebagian, selain_
+
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 39 | كُلٌّ | setiap; semua; masing-masing | 359 |
+| 81 | بَعْضٌ | sebagian | 157 |
+| 86 | غَيْرٌ | selain; bukan; tanpa | 147 |
+
+### Kata seru (1 kata · 0,2%)
+
+_wahai_
+
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 84 | أَيُّهَا | wahai; hai | 153 |
+
+### Kata benda: orang & makhluk (18 kata · 4,0%)
+
+_Tuhan, rasul, manusia, hamba_
+
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 16 | رَبٌّ | Tuhan; pemelihara | 975 |
+| 34 | قَوْمٌ | kaum | 383 |
+| 43 | رَسُولٌ | rasul; utusan | 332 |
+| 48 | نَفْسٌ | jiwa; diri; seseorang | 295 |
+| 61 | نَاسٌ | manusia | 241 |
+| 64 | مُؤْمِنٌ | orang beriman; mukmin | 230 |
+| 80 | كَافِرٌ | orang kafir; kafir | 158 |
+| 85 | إِلٰهٌ | tuhan; sesembahan | 147 |
+| 91 | ابْنٌ | anak (laki-laki); putra; bani (keturunan) | 143 |
+| 98 | ظَالِمٌ | orang zalim; zalim | 135 |
+| 100 | عَبْدٌ | hamba | 131 |
+| 103 | أَهْلٌ | penduduk; keluarga; ahli | 127 |
+| 113 | ذُو | yang mempunyai; pemilik | 116 |
+| 117 | أَبٌ | bapak | 110 |
+| 133 | صَاحِبٌ | teman; pemilik; penghuni | 90 |
+| 138 | مَلَكٌ | malaikat | 88 |
+| 143 | وَلِيٌّ | pelindung; penolong; wali | 86 |
+| 153 | أَخٌ | saudara (laki-laki) | 82 |
+
+### Kata benda: benda & hal (26 kata · 4,8%)
+
+_bumi, hari, kitab, rahmat_
+
+| No. | Kata | Arti | × |
+|---|---|---|---|
+| 29 | أَرْضٌ | bumi; tanah; negeri | 461 |
+| 32 | يَوْمٌ | hari | 405 |
+| 35 | آيَةٌ | tanda; ayat; bukti | 382 |
+| 44 | عَذَابٌ | azab; siksa | 322 |
+| 45 | سَمَاءٌ | langit; hujan | 310 |
+| 50 | شَيْءٌ | sesuatu; sedikit pun | 283 |
+| 58 | كِتَابٌ | kitab; tulisan; ketetapan | 260 |
+| 59 | حَقٌّ | kebenaran; benar; hak | 247 |
+| 74 | سَبِيلٌ | jalan | 176 |
+| 76 | أَمْرٌ | urusan; perintah; perkara | 166 |
+| 87 | جَنَّةٌ | surga; kebun | 147 |
+| 88 | نَارٌ | api; neraka | 145 |
+| 99 | قَلْبٌ | hati | 132 |
+| 110 | يَدٌ | tangan | 120 |
+| 115 | دُنْيَا | dunia; yang dekat | 115 |
+| 116 | رَحْمَةٌ | rahmat; kasih sayang | 114 |
+| 122 | أَجْرٌ | pahala; upah; balasan | 105 |
+| 123 | عِلْمٌ | ilmu; pengetahuan | 105 |
+| 130 | قَوْلٌ | perkataan; ucapan | 93 |
+| 131 | دِينٌ | agama; pembalasan; ketaatan | 92 |
+| 139 | مَثَلٌ | perumpamaan; contoh; sifat | 88 |
+| 142 | مَالٌ | harta | 86 |
+| 144 | هُدًى | petunjuk | 85 |
+| 146 | فَضْلٌ | karunia; keutamaan | 84 |
+| 147 | لَيْلٌ | malam | 84 |
+| 148 | صَلَاةٌ | salat; doa | 83 |
 
 ## Fi'il فِعْلٌ (30 kata · 8,7%)
 
-### Fi'il tsulatsi mujarrad فِعْلٌ ثُلَاثِيٌّ مُجَرَّدٌ (18 kata · 5,2%)
+### Kata kerja (28 kata · 7,2%)
+
+_berkata, mengetahui, menjadikan_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
 | 11 | قَالَ – يَقُولُ | berkata; berfirman | 1.618 |
+| 24 | آمَنَ – يُؤْمِنُ | beriman | 537 |
 | 36 | عَلِمَ – يَعْلَمُ | mengetahui | 382 |
 | 41 | جَعَلَ – يَجْعَلُ | menjadikan; membuat | 340 |
 | 49 | كَفَرَ – يَكْفُرُ | kafir; mengingkari; tidak bersyukur | 289 |
 | 52 | جَاءَ – يَجِيءُ | datang; membawa (dengan بِ) | 278 |
 | 53 | عَمِلَ – يَعْمَلُ | berbuat; mengerjakan; beramal | 276 |
+| 54 | آتَى – يُؤْتِي | memberi; mendatangkan; menunaikan (zakat) | 271 |
 | 55 | رَأَى – يَرَى | melihat; memperhatikan; berpendapat | 271 |
 | 57 | أَتَى – يَأْتِي | datang; mendatangi; membawa (dengan بِ) | 264 |
 | 63 | شَاءَ – يَشَاءُ | menghendaki | 236 |
 | 71 | خَلَقَ – يَخْلُقُ | menciptakan | 184 |
+| 72 | أَنْزَلَ – يُنْزِلُ | menurunkan | 183 |
+| 73 | كَذَّبَ – يُكَذِّبُ | mendustakan | 176 |
 | 75 | دَعَا – يَدْعُو | menyeru; berdoa; memanggil | 170 |
+| 77 | اتَّقَى – يَتَّقِي | bertakwa | 166 |
 | 90 | هَدَى – يَهْدِي | memberi petunjuk | 144 |
+| 93 | أَرَادَ – يُرِيدُ | menghendaki; bermaksud | 139 |
+| 96 | اتَّبَعَ – يَتَّبِعُ | mengikuti | 136 |
+| 101 | أَرْسَلَ – يُرْسِلُ | mengutus; mengirimkan | 130 |
 | 104 | أَخَذَ – يَأْخُذُ | mengambil | 127 |
+| 108 | اتَّخَذَ – يَتَّخِذُ | menjadikan; mengambil | 124 |
 | 109 | عَبَدَ – يَعْبُدُ | menyembah; beribadah | 122 |
 | 118 | ظَلَمَ – يَظْلِمُ | menzalimi; menganiaya; berbuat zalim | 110 |
 | 120 | سَأَلَ – يَسْأَلُ | bertanya; meminta | 106 |
 | 121 | وَجَدَ – يَجِدُ | mendapati; menemukan | 106 |
+| 126 | أَخْرَجَ – يُخْرِجُ | mengeluarkan | 99 |
 | 128 | أَكَلَ – يَأْكُلُ | makan; memakan | 93 |
 
-### Fi'il tsulatsi mazid فِعْلٌ ثُلَاثِيٌّ مَزِيدٌ (10 kata · 2,0%)
+### Kata kerja bantu (2 kata · 1,5%)
 
-| No. | Kata | Arti | × |
-|---|---|---|---|
-| 24 | آمَنَ – يُؤْمِنُ | beriman | 537 |
-| 54 | آتَى – يُؤْتِي | memberi; mendatangkan; menunaikan (zakat) | 271 |
-| 72 | أَنْزَلَ – يُنْزِلُ | menurunkan | 183 |
-| 73 | كَذَّبَ – يُكَذِّبُ | mendustakan | 176 |
-| 77 | اتَّقَى – يَتَّقِي | bertakwa | 166 |
-| 93 | أَرَادَ – يُرِيدُ | menghendaki; bermaksud | 139 |
-| 96 | اتَّبَعَ – يَتَّبِعُ | mengikuti | 136 |
-| 101 | أَرْسَلَ – يُرْسِلُ | mengutus; mengirimkan | 130 |
-| 108 | اتَّخَذَ – يَتَّخِذُ | menjadikan; mengambil | 124 |
-| 126 | أَخْرَجَ – يُخْرِجُ | mengeluarkan | 99 |
-
-### Fi'il naqish فِعْلٌ نَاقِصٌ (2 kata · 1,5%)
+_adalah, bukan_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
