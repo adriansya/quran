@@ -115,7 +115,7 @@ _yang, siapa, apa_
 | 18 | مَنْ | siapa; barang siapa; orang yang | 824 |
 | 46 | الَّذِي | yang; orang yang | 304 |
 
-### Nama (4 kata · 3,1%)
+### Nama (3 kata · 3,0%)
 
 _Allah, nama nabi, dll._
 
@@ -124,7 +124,6 @@ _Allah, nama nabi, dll._
 | 5 | اللّٰهُ | Allah | 2.699 |
 | 95 | مُوسَى | Musa | 136 |
 | 135 | شَيْطَانٌ | setan | 88 |
-| 163 | جَهَنَّمُ | neraka Jahanam | 77 |
 
 ### Sifat-sifat Allah (10 kata · 0,8%)
 
@@ -223,7 +222,7 @@ _Tuhan, rasul, manusia, hamba_
 | 143 | وَلِيٌّ | pelindung; penolong; wali | 86 |
 | 153 | أَخٌ | saudara (laki-laki) | 82 |
 
-### Kata benda: benda & hal (26 kata · 4,8%)
+### Kata benda: benda & hal (27 kata · 4,9%)
 
 _bumi, hari, kitab, rahmat_
 
@@ -255,6 +254,7 @@ _bumi, hari, kitab, rahmat_
 | 146 | فَضْلٌ | karunia; keutamaan | 84 |
 | 147 | لَيْلٌ | malam | 84 |
 | 148 | صَلَاةٌ | salat; doa | 83 |
+| 164 | ذِكْرٌ | peringatan; zikir; pelajaran | 76 |
 
 ## Fi'il فِعْلٌ (30 kata · 8,7%)
 
