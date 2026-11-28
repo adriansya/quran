@@ -106,6 +106,8 @@ MEAN_FIX = {
     "d~unoyaA": ["dunia", "yang dekat"],
     "raHomap": ["rahmat", "kasih sayang"],
     "Hakiym": ["Maha Bijaksana", "bijaksana"],
+    "r~aHiym": ["Maha Penyayang"],
+    "hudFY": ["petunjuk"],
     "diyn": ["agama", "pembalasan", "ketaatan"],
     "SaY`Hib": ["teman", "pemilik", "penghuni"],
     "$ayoTa`n": ["setan"],
@@ -352,6 +354,8 @@ MEAN_FIX = {
     "<isoraA}iyl": ["Israil (Nabi Ya'qub)"], "luwT": ["Luth"], "<isoHaAq": ["Ishaq"], "sulayoma`n": ["Sulaiman"],
     # --- fi'il (madhi) ---
     "qaAla": ["berkata", "berfirman"],
+    "xalaqa": ["menciptakan"],
+    "Ealima": ["mengetahui"],
     "kaAna": ["adalah", "ada", "menjadi"],
     "kafara": ["kafir", "mengingkari", "tidak bersyukur"],
     "jaA^'a": ["datang", "membawa (dengan بِ)"],

@@ -183,6 +183,30 @@ def plural_forms(L, lemma_ar):
     return res
 
 
+def marfu_mudhari(m, root):
+    """Bentuk kamus mudhari' = marfu': يَقْتُلَ/يَجِدْ -> يَقْتُلُ/يَجِدُ; يَتَّقِ -> يَتَّقِي; يَدْعُ -> يَدْعُو; يَخْشَ -> يَخْشَى."""
+    FA, DA, KA, SK, SH = "\u064E", "\u064F", "\u0650", "\u0652", "\u0651"
+    weak = root[-1:] in ("w", "y")
+    last = m[-1:]
+    if last not in (FA, DA, KA, SK):
+        return m
+    base = m[:-1]
+    if last == SK and len(base) >= 3 and base[-1] == base[-3] and base[-2] == KA:
+        return {"يُمْدِدْ": "يُمِدُّ", "يَسْتَعْفِفْ": "يَسْتَعِفُّ"}.get(m, m)  # mudha'af fakk -> idgham
+    if last == FA and base[-1:] in ("ي", "و"):
+        return base  # يُبْدِيَ -> يُبْدِي
+    if weak:
+        if last == KA:
+            return m + "ي"  # يَتَّقِ -> يَتَّقِي
+        if last == DA and base[-1:] not in ("و",):
+            return m + ("و" if root[-1] == "w" else "")  # يَدْعُ -> يَدْعُو
+        if last == FA:
+            return m + "ى"  # يَخْشَ -> يَخْشَى
+    if last == DA:
+        return m
+    return base + DA  # يَقْتُلَ، يَجِدْ، يَسْتَغْفِرِ، يَصُدَّ -> ...ُ
+
+
 def sharaf_info(k, L, pos, ar, notes):
     info = {}
     if pos == "V":
@@ -195,7 +219,7 @@ def sharaf_info(k, L, pos, ar, notes):
             ranked = sorted(L["impf"].items(), key=lambda x: (
                 0 if re.search(r"(iy|uw|aY`?|aA)$", x[0]) else 1 if x[0].endswith("u") else 2, -x[1]))
             cands = [x[0] for x in ranked]
-            info["mudhari"] = std(re.sub(r"^(.)~", r"\1", cands[0]))
+            info["mudhari"] = marfu_mudhari(std(re.sub(r"^(.)~", r"\1", cands[0])), L["root"] or "")
     elif pos in ("N", "ADJ"):
         pl = plural_forms(L, ar)
         if pl:
