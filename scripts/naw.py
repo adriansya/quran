@@ -77,9 +77,9 @@ POS_HARF = {
 POS_ISIM = {"PN": "alam", "PRON": "dhamir", "DEM": "isyarah", "REL": "maushul", "T": "zharaf_zaman", "LOC": "zharaf_makan"}
 # Kata tanya yang berupa isim (bukan harf هَل / أَ)
 ISTIFHAM_ISIM = {"kayofa", ">ayona", "mataY`", "kam", ">an~aY`", ">ay~aAn", ">ay~", "maA", "man", "maA*aA"}
-KANA = {"kaAna", ">aSobaHa", ">amosaY`", ">aDoHaY`", "Zal~a", "baAta", "SaAra", "laysa", "zaAla", "fati}a", "baraHa",
+KANA = {"kaAna", ">aSobaHa", ">amosaY`", ">aDoHaY`", "Zal~a", "baAta", "SaAra", "layosa", "zaAla", "fati}a", "baraHa",
         "{nfak~a", "daAma"}
-JAMID = {"laysa", "EasaY`", "niEoma", "bi}osa", "habo", "haAti", "hayota", "taEaAlaY`", "taEaAla"}
+JAMID = {"layosa", "EasaY`", "niEoma", "bi}osa", "habo", "haAti", "hayota", "taEaAlaY`", "taEaAla"}
 
 
 def template(bw, root):
@@ -166,10 +166,10 @@ def classify(k, pos, root, feats, means, form, verb_vowel=None):
     if k in REVIEW.JENIS:
         return REVIEW.JENIS[k]
     if pos == "V":
+        if base in KANA:  # لَيْسَ: jamid sekaligus naqish -> dikelompokkan bersama كَانَ
+            return "f_naqish"
         if base in JAMID:
             return "f_jamid"
-        if base in KANA:
-            return "f_naqish"
         if root and len(root) == 4:
             return "f_rubai"
         return "f_mujarrad" if form in (None, "I") else "f_mazid"
