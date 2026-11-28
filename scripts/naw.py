@@ -136,6 +136,21 @@ MAFAL = {
 }
 
 
+# Jenis yang tak terjangkau kaidah umum (kunci = lemma Buckwalter).
+JENIS_FIX = {
+    "r~aHoma`n": "mubalaghah",  # الرَّحْمٰنُ: wazan فَعْلَان, mubalaghah
+    "ra'uwf": "mubalaghah",  # رَءُوفٌ: فَعُول
+    "malik": "musyabbahah",  # مَلِكٌ: فَعِل
+    "$ahiyd": "mubalaghah",  # شَهِيدٌ (Maha Menyaksikan)
+    "raqiyb": "mubalaghah",  # رَقِيبٌ (Maha Mengawasi)
+}
+# Masdar yang tidak ditandai VN oleh Corpus (dipakai sebagai kata benda), tetapi secara sharaf adalah masdar.
+for _k in ("Eilom", "raHomap", "hudFY", "xaloq", "kufor", "Zulom", "Eamal", "Hukom", "Sabor", "naSor", "Hamod",
+           "mawot", "ka*ib", "$ukor", "Dala`l", "xawof", "rayob", "Eibaadap", "<iHosa`n", "fasaAd", "Eafow",
+           "sujuwd", "duEaA^'", "nasol", "qatol", "baEov", "jihaAd", "Ta`Eap", "<isoraAf", "<ino*aAr"):
+    JENIS_FIX.setdefault(_k, "masdar")
+
+
 def classify(k, pos, root, feats, means, form, verb_vowel=None):
     """k: lemma kanonik (Buckwalter), pos: POS Corpus, feats: Counter fitur, means: daftar arti."""
     base = re.sub(r"\d+$", "", k.split(":", 1)[-1])
@@ -182,12 +197,16 @@ def classify(k, pos, root, feats, means, form, verb_vowel=None):
         return "adad"
     if base.endswith("iy~") and len(base) > 4 and root and root[-1] not in "wy":
         return "nisbah"  # ya' nisbah bukan huruf akar (عَرَبِيّ، حَوَارِيّ)
-    intens = pos == "ADJ" and any(re.match(r"(Maha|sangat|amat|banyak)", m, re.I) for m in means)
+    if base in JENIS_FIX:
+        return JENIS_FIX[base]
+    # nama/sifat Allah sering ditandai N (bukan ADJ) oleh Corpus: tetap sifat bila bermakna "Maha …"
+    maha = any(re.match(r"(Yang )?Maha", m) for m in means)
+    intens = (pos == "ADJ" or maha) and any(re.match(r"(Yang )?(Maha|sangat|amat|banyak)", m, re.I) for m in means)
     if intens and re.fullmatch(r"1a2~aA3|1a2uw3|mi1o2aA3|1i2~iy3", t):
         return "mubalaghah"  # فَعَّال، فَعُول، مِفْعَال، فِعِّيل bermakna intensif
     # فَعِيل bermakna "Maha …" dari fi'il yang bukan فَعُلَ (عَلِيم، رَحِيم، سَمِيع): mubalaghah;
     # dari فَعُلَ (كَبِير، قَرِيب، كَرِيم): shifah musyabbahah
-    if re.fullmatch(r"1a2iy3", t) and pos == "ADJ" and any(m.startswith("Maha") for m in means) and verb_vowel != "u":
+    if re.fullmatch(r"1a2iy3", t) and maha and verb_vowel != "u":
         return "mubalaghah"
     if re.fullmatch(r"1u2ayo3", t):
         return "tasghir"
@@ -197,8 +216,8 @@ def classify(k, pos, root, feats, means, form, verb_vowel=None):
         return MAFAL[base]
     if re.fullmatch(r"ma1o2a3|ma1o2i3", t) and base not in NOT_MAKAN:
         return "makan"
-    if pos == "ADJ":
-        return "musyabbahah"
+    if pos == "ADJ" or (maha and re.fullmatch(r"1a2iy3|1a2i3|1a2u3", t)):
+        return "musyabbahah"  # عَزِيز (dari fi'il lazim)، مَلِك
     return "isim"
 
 
@@ -245,7 +264,7 @@ FALAN = {"كَسْلَان", "رَحْمٰن", "سَكْرَان", "غَضْبَ
 MABNI_FORM = {
     # tulisan kamus yang tidak bisa diturunkan dari kaidah umum
     ">ay~uhaA": "أَيُّهَا", ">ay~atuhaA": "أَيَّتُهَا", "*uw": "ذُو", ">uwliY": "أُولُو", "kilaA": "كِلَا", "kilotaA": "كِلْتَا",
-    ">aqoSaA": "أَقْصَى", "S~afaA": "الصَّفَا", "kita`biY": "كِتَابِيَهْ", "raA^d~iY": "رَادٌّ",
+    ">aqoSaA": "أَقْصَى", "S~afaA": "الصَّفَا", "miSor": "مِصْرُ", "kita`biY": "كِتَابِيَهْ", "raA^d~iY": "رَادٌّ",
     "min": "مِنْ", "Ean": "عَنْ", "qad": "قَدْ", "lam": "لَمْ", "lan": "لَنْ", "bal": "بَلْ", "hal": "هَلْ",
     ">am": "أَمْ", "<in": "إِنْ", ">an": "أَنْ", "man": "مَنْ", "kam": "كَمْ", "naEam": "نَعَمْ",
     "la`kin": "لٰكِنْ", "<il~am": "إِلَّمْ", "<in~": "إِنَّ", ">an~": "أَنَّ", "vum~": "ثُمَّ",
