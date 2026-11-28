@@ -101,3 +101,8 @@ Lemma Quranic Arabic Corpus tidak selalu dalam bentuk kamus. `scripts/canon.py` 
   isim fa'il, maf'ul, masdar, tafdhil, shifah musyabbahah, shighah mubalaghah, isim makan/zaman, alat, nisbah,
   'adad, 'alam, dhamir, isyarah, maushul, zharaf; harf jar, 'athf, nafy, nashb, mashdari, syarth, dst.
 - Nomor kata v3 -> v4 dipetakan lewat lokasi tiap kata di Al-Qur'an (`remap-v3.json`).
+
+
+## Huruf yang menempel
+
+Awalan dari Corpus (`PREFIX|w:CONJ+`, `bi+`, `l:P+`, `sa+` dan seterusnya) dijadikan 12 kartu harf tersendiri (lihat `PREFIX` di `scripts/build_data.py`): وَ dan فَ masing-masing satu kartu untuk semua fungsinya; لِ jar, لَ taukid dan لِ amr dipisah. `Al+` (اَلْ) tidak dijadikan kartu. Kemunculannya ditambahkan ke `occ.json` pada lokasi kata yang ditempelinya, sehingga total satuan = 77.429 + 20.293 = 97.722.

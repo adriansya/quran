@@ -1,6 +1,8 @@
 // Kosakata Al-Qur'an — single-page app statis (tanpa build step).
 const $app = document.getElementById("app");
-const TOTAL_WORDS = 77429;
+// Penyebut persentase cakupan: kata + huruf yang menempel (وَ، فَ، بِ، لِ …), karena keduanya jadi kartu.
+// Dihitung dari data saat dimuat (77.429 kata + 20.293 huruf menempel = 97.722).
+let TOTAL_WORDS = 0, WORDS = 0;
 
 // ---------- data ----------
 const cache = new Map();
@@ -97,9 +99,9 @@ async function pageHome() {
       <div class="me-s">${fmt(c.nl)} kata dasar lulus · ${fmt(c.lrn)} sedang dipelajari · ${fmt(c.nm)} dikuasai · <a href="#/statistik">statistik</a></div>
     </aside>
   </section>
-  <div class="sect-h"><h2>Statistik isi Al-Qur'an</h2><p class="muted">Analisis ${fmt(TOTAL_WORDS)} kata dari 114 surah. Arahkan kursor (atau ketuk) grafik untuk detail; setiap grafik punya tabel datanya.</p></div>
+  <div class="sect-h"><h2>Statistik isi Al-Qur'an</h2><p class="muted">Analisis ${fmt(WORDS)} kata dari 114 surah; huruf yang menempel (<span class="ar">وَ، فَ، بِ، لِ</span> …) dihitung sebagai kata tersendiri. Arahkan kursor (atau ketuk) grafik untuk detail; setiap grafik punya tabel datanya.</p></div>
   <div id="dash"><p class="muted">Menghitung statistik…</p></div>`;
-  await renderDashboard(document.getElementById("dash"), { LEMMAS, TOTAL_WORDS, fmt, getJSON, roots, npd: S.st.npd, level: S.level });
+  await renderDashboard(document.getElementById("dash"), { LEMMAS, TOTAL_WORDS, WORDS, fmt, getJSON, roots, npd: S.st.npd, level: S.level });
 }
 
 function pageVocab(q) {
@@ -170,7 +172,7 @@ async function pageLemma(id) {
   $app.innerHTML = `
   <div class="lemma-head">
     <div>
-      <div class="row"><span class="pill accent jenis" title="${esc(L.jenis[2])}">${esc(L.jenis[0])} · <span class="ar">${L.jenis[1]}</span> · ${esc(L.jenis[2])}</span><span class="pill rankpill">No. ${fmt(id + 1)} terbanyak</span></div>
+      <div class="row"><span class="pill accent jenis" title="${esc(L.jenis[2])}">${esc(L.jenis[0])} · <span class="ar">${L.jenis[1]}</span> · ${esc(L.jenis[2])}</span><span class="pill rankpill">No. ${fmt(id + 1)} terbanyak</span>${L.menempel ? `<span class="pill" title="Ditulis bersambung dengan kata sesudahnya">huruf menempel</span>` : ""}</div>
       <div class="meanings">${esc(L.mean.join("; ") || "—")}</div>
       <div class="muted">${esc(L.tr)} · muncul <b>${fmt(L.n)}×</b> · akar ${R ? `<a href="#/akar/${encodeURIComponent(R.bw)}" class="ar" style="font-size:20px">${rootSpaced(L.root)}</a>` : "—"}</div>
       ${sharafRows(L) ? `<dl class="det sharaf">${sharafRows(L)}</dl>` : ""}
@@ -290,6 +292,8 @@ async function route() {
 (async () => {
   let M;
   [LEMMAS, CHAPTERS, M] = await Promise.all([getJSON("data/lemmas.json"), getJSON("data/chapters.json"), mushaf()]);
+  TOTAL_WORDS = LEMMAS.reduce((a, x) => a + x.n, 0);
+  WORDS = TOTAL_WORDS - LEMMAS.reduce((a, x) => a + (x.menempel ? x.n : 0), 0);
   // pindahkan progres lama ke nomor kata versi terbaru, bertahap (v1 -> v2 -> v3)
   if (!Object.keys(S.st.cards).length) { S.st.dv = S.DATA_VERSION; S.save(); }
   while (S.st.dv < S.DATA_VERSION) S.remapIds(await getJSON(`data/remap-v${S.st.dv}.json`));

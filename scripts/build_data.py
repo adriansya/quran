@@ -258,6 +258,7 @@ def corpus_stats(order, occ, mushaf, chapters, surah_out):
 
 
 VOWEL_I = {}
+PFX_FORMS = collections.defaultdict(collections.Counter)
 # Isim maushul & isyarah mabni: tiap bentuk adalah kata tersendiri (Corpus menyatukannya dalam satu lemma).
 SPLIT = {
     "{l~a*iY": [(r"\*iyn", "{l~a*iyna"), (r"\*aAn|\*ayon", "{l~a*aAni"), (r"a`(ti|_#i)", "{l~a`tiY"),
@@ -278,6 +279,39 @@ BENTUK = {
     "hunaA": "isyarah tempat, dekat (di sini)", "ha`ka*aA": "isyarah dengan kaf tasybih (seperti ini)",
 }
 CMAP = {}  # lemma Corpus -> lemma kanonik (diisi di main)
+
+# Huruf yang menempel (awalan) dijadikan kartu tersendiri. اَلْ (penanda ma'rifat) tidak.
+# kunci -> (tulisan, jenis, arti, transliterasi, catatan, tag awalan di Corpus)
+PREFIX = {
+    "PFX:wa": ("وَ", "athf", ["dan", "demi (sumpah)", "sedangkan"], "wa",
+               "Wawu 'athf (dan), isti'naf (awal kalimat baru), haal (sedangkan/padahal), qasam (demi …, termasuk harf jar), dan ma'iyyah (bersama). Selalu menempel pada kata sesudahnya.",
+               ("w:CONJ+", "w:REM+", "w:CIRC+", "w:SUP+", "w:P+", "w:COM+")),
+    "PFX:fa": ("فَ", "athf", ["maka", "lalu", "karena itu"], "fa",
+               "Fa' 'athf (lalu, berurutan), sababiyah (karena itu), jawab syarth (maka), dan isti'naf. Selalu menempel pada kata sesudahnya.",
+               ("f:REM+", "f:CONJ+", "f:RSLT+", "f:SUP+", "f:CAUS+")),
+    "PFX:bi": ("بِ", "jar", ["dengan", "karena", "pada/di"], "bi",
+               "Ba' jar: alat atau sebab (dengan, karena), tempat (di), penyerta, dan sumpah (بِاللّٰهِ). Selalu menempel.",
+               ("bi+",)),
+    "PFX:li": ("لِ", "jar", ["untuk", "milik/bagi", "agar"], "li",
+               "Lam jar: kepemilikan (milik, bagi) dan tujuan (untuk); sebelum fi'il mudhari' bermakna agar (lam ta'lil). Berharakat fathah bila bertemu dhamir: لَهُ، لَكُمْ.",
+               ("l:P+", "l:PRP+")),
+    "PFX:la": ("لَ", "taukid", ["sungguh", "benar-benar"], "la",
+               "Lam taukid/ibtida' dan lam jawab qasam: لَقَدْ، لَيَقُولُنَّ. Bedakan dengan لِ (untuk).",
+               ("l:EMPH+",)),
+    "PFX:lamr": ("لِ", "jazm", ["hendaklah"], "li",
+                 "Lam amr: masuk ke fi'il mudhari' dan menjazmkannya: لِيُنْفِقْ (hendaklah ia berinfak). Setelah وَ/فَ biasanya disukun: فَلْيَعْبُدُوا.",
+                 ("l:IMPV+",)),
+    "PFX:ka": ("كَ", "jar", ["seperti", "bagaikan"], "ka", "Kaf tasybih (harf jar): كَمَثَلِ، كَالْأَنْعَامِ.", ("ka+",)),
+    "PFX:ta": ("تَ", "jar", ["demi (sumpah)"], "ta", "Ta' qasam, hanya dipakai dengan lafal Allah: تَاللّٰهِ.", ("ta+",)),
+    "PFX:a": ("أَ", "istifham", ["apakah"], "a",
+              "Hamzah istifham (apakah …?); juga hamzah taswiyah (sama saja … atau …): سَوَاءٌ عَلَيْهِمْ أَأَنْذَرْتَهُمْ.",
+              ("A:INTG+", "A:EQ+")),
+    "PFX:sa": ("سَ", "istiqbal", ["akan"], "sa",
+               "Sin tanfis: masuk ke fi'il mudhari', bermakna akan (waktu dekat): سَيَقُولُ. Bandingkan سَوْفَ (kelak).", ("sa+",)),
+    "PFX:ya": ("يَا", "nida", ["wahai"], "yā", "Harf nida'; di mushaf ditulis menempel: يٰٓأَيُّهَا، يٰقَوْمِ.", ("ya+",)),
+    "PFX:ha": ("هَا", "tanbih", ["nah", "ingatlah"], "hā", "Ha' tanbih: هٰٓأَنْتُمْ (nah, kalian ini …).", ("ha+",)),
+}
+PREFIX_OF = {tag: k for k, v in PREFIX.items() for tag in v[5]}
 
 
 def analyse(segs):
@@ -383,6 +417,11 @@ def main():
                 L["forms"][w["text_uthmani"]] += 1
                 L["tr"].setdefault(w["text_uthmani"], w["transliteration"]["text"])
                 occ[a["lem"]].append(loc)
+                for seg in corpus[loc]:  # huruf menempel (وَ، فَ، بِ، لِ …) = kemunculan kartu tersendiri
+                    pk = PREFIX_OF.get(seg[2][1]) if seg[2][0] == "PREFIX" else None
+                    if pk and occ[pk][-1:] != [loc]:
+                        occ[pk].append(loc)
+                        PFX_FORMS[pk][w["text_uthmani"]] += 1
                 ws.append([w["text_uthmani"], meaning, w["transliteration"]["text"], a["lem"]])
             tr = TAG_RE.sub("", v["translations"][0]["text"]).strip()
             vs.append({"n": v["verse_number"], "w": ws, "t": tr})
@@ -397,12 +436,20 @@ def main():
                 VOWEL_I.setdefault(LL["root"], m.group(1))
 
     # urutkan lemma berdasarkan frekuensi -> id numerik
-    order = sorted(lemmas, key=lambda k: (-len(occ[k]), k))
+    order = sorted([*lemmas, *(k for k in PREFIX if occ[k])], key=lambda k: (-len(occ[k]), k))
     lid = {k: i for i, k in enumerate(order)}
 
     roots = {}
     lemma_list = []
     for k in order:
+        if k in PREFIX:
+            ar, jk, means, tr, note, _ = PREFIX[k]
+            lemma_list.append({
+                "id": lid[k], "ar": ar, "bw": k, "root": None, "pos": "P", "posId": NAW.TERMS[jk][0],
+                "jenis": list(NAW.TERMS[jk]), "jk": jk, "vform": None, "k": "h", "n": len(occ[k]), "mean": means,
+                "form": PFX_FORMS[k].most_common(1)[0][0], "tr": tr, "catatan": note, "menempel": True,
+            })
+            continue
         L = lemmas[k]
         pos = L["pos"].most_common(1)[0][0]
         top_form = L["forms"].most_common(1)[0][0]

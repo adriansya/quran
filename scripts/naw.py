@@ -60,6 +60,8 @@ TERMS = {
     "tafshil": ("Harf tafshil", "حَرْفُ تَفْصِيلٍ", "adapun"),
     "kaffah": ("Ma kaffah", "مَا الْكَافَّةُ", "pencegah amal"),
     "taukid": ("Harf taukid", "حَرْفُ تَوْكِيدٍ", "penegas"),
+    "tanbih": ("Harf tanbih", "حَرْفُ تَنْبِيهٍ", "penarik perhatian"),
+    "jazm": ("Harf jazm", "حَرْفُ جَزْمٍ", "lam amr: hendaklah"),
     "muqathaah": ("Huruf muqaththa'ah", "الْحُرُوفُ الْمُقَطَّعَةُ", "huruf pembuka surah"),
     "harf": ("Harf", "حَرْفٌ", "partikel"),
 }

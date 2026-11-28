@@ -215,12 +215,12 @@ function targetSection(cum) {
       el("div", {}, [
         el("p", { class: "eyebrow", text: "Target hafalan" }),
         el("h3", { html: `Hafal <b>300 kata dasar</b>, kenali <b>${pct0(p300)}</b> dari seluruh kata dalam Al-Qur'an` }),
-        el("p", { class: "target-sub", html: `Dari <b>${C.fmt(L.length)}</b> kata dasar, ada yang muncul ribuan kali (<span class="ar" dir="rtl">مِنْ، اللّٰهُ، قَالَ</span>) dan ada <b>${C.fmt(L.filter((x) => x.n === 1).length)}</b> yang hanya muncul sekali. Karena latihan dimulai dari kata yang paling sering, 300 kata pertama sudah mencakup <b>${pct0(p300)}</b> dari seluruh <b>${C.fmt(C.TOTAL_WORDS)}</b> kata dalam Al-Qur'an. Dengan <b>${npd} kata baru per hari</b>, target ini tercapai dalam <b>${lama(Math.ceil(300 / npd))}</b>, cukup 10–15 menit sehari.` }),
+        el("p", { class: "target-sub", html: `Dari <b>${C.fmt(L.length)}</b> kata dasar, ada yang muncul ribuan kali (<span class="ar" dir="rtl">مِنْ، اللّٰهُ، قَالَ</span>) dan ada <b>${C.fmt(L.filter((x) => x.n === 1).length)}</b> yang hanya muncul sekali. Karena latihan dimulai dari kata yang paling sering, 300 kata pertama sudah mencakup <b>${pct0(p300)}</b> dari seluruh kata dalam Al-Qur'an. Dengan <b>${npd} kata baru per hari</b>, target ini tercapai dalam <b>${lama(Math.ceil(300 / npd))}</b>, cukup 10–15 menit sehari.` }),
       ]),
       el("a", { class: "btn primary", href: "#/latihan", text: "Mulai latihan →" }),
     ]),
     el("ol", { class: "tsteps" }, tiles),
-    el("p", { class: "target-note small muted", html: `Lama waktu dihitung dari ${npd} kata baru per hari (bisa diubah di halaman Latihan). Kata yang sudah dihafal tetap diulang sesuai jadwal agar tidak lupa.` }),
+    el("p", { class: "target-note small muted", html: `Lama waktu dihitung dari ${npd} kata baru per hari (bisa diubah di halaman Latihan). Huruf yang menempel (<span class="ar">وَ، فَ، بِ، لِ</span> …) dihitung sebagai kata tersendiri. Kata yang sudah dihafal tetap diulang sesuai jadwal agar tidak lupa.` }),
   ]);
 }
 
@@ -241,7 +241,7 @@ export async function renderDashboard(root, ctx) {
       el("div", { class: "dhero-txt", html: `kata dalam Al-Qur'an sudah tercakup oleh <b>300 kata dasar</b> yang paling sering muncul (dari ${C.fmt(L.length)}). Cukup <b>${C.fmt(N50)}</b> kata dasar untuk separuhnya, dan <b>${C.fmt(N80)}</b> untuk 80%.` }),
     ]),
     el("div", { class: "kpis" }, [
-      ["Kata (kemunculan)", C.fmt(T), `${C.fmt(ST.verses)} ayat · 114 surah`],
+      ["Kata (kemunculan)", C.fmt(C.WORDS), `+ ${C.fmt(T - C.WORDS)} huruf menempel · ${C.fmt(ST.verses)} ayat`],
       ["Bentuk kata berbeda", C.fmt(ST.forms), "dengan imbuhan & i'rab"],
       ["Kata dasar", C.fmt(L.length), `${C.fmt(R.length)} akar kata`],
       ["Muncul sekali saja", C.fmt(hapax), `${pct0(hapax / L.length)} dari kata dasar (hapax)`],
