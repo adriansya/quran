@@ -30,10 +30,9 @@ def pct(xs):
 # Kelompok berdasarkan jenis kata dalam bahasa Indonesia (bukan istilah nahwu).
 # Urutan di sini = urutan tampil. Nilai: (nama kelompok, contoh arti).
 GROUPS = {
-    "h": [("Kata sambung", "dan, lalu, atau, bahwa, kecuali, agar"), ("Kata depan", "dari, di, ke, untuk, dengan"),
-          ("Kata penegas", "sesungguhnya, sungguh"), ("Kata ingkar", "tidak, belum, tidak akan"),
-          ("Kata tanya", "apakah, bagaimana"), ("Kata syarat", "jika, seandainya"),
-          ("Kata seru & keterangan", "wahai, akan")],
+    "h": [("Kata sambung", "dan, lalu, atau, bahkan, bahwa, kecuali, agar"), ("Kata depan", "dari, di, ke, untuk, dengan"),
+          ("Kata keterangan", "sungguh, telah, tidak, belum, akan"),
+          ("Kata tanya, syarat & seru", "apakah, bagaimana, jika, seandainya, wahai")],
     "i": [("Kata ganti orang", "dia, kamu, kami, mereka"), ("Kata tunjuk", "ini, itu"),
           ("Kata penghubung", "yang, siapa, apa"), ("Nama", "Allah, nama nabi, dll."),
           ("Sifat-sifat Allah", "Maha …"), ("Keterangan waktu", "ketika, sebelum, sesudah"),
@@ -46,16 +45,17 @@ GROUPS = {
 BY_JENIS = {
     "Harf 'athf": "Kata sambung", "Harf idhrab": "Kata sambung", "Harf mashdari": "Kata sambung",
     "Adat istitsna'": "Kata sambung", "Harf istidrak": "Kata sambung", "Harf tafshil": "Kata sambung",
-    "Harf jar": "Kata depan", "Harf taukid": "Kata penegas", "Harf tahqiq": "Kata penegas",
-    "Harf nafy": "Kata ingkar", "Harf jazm": "Kata ingkar", "Harf istifham": "Kata tanya", "Adat syarth": "Kata syarat",
-    "Harf nida'": "Kata seru & keterangan", "Harf istiqbal": "Kata seru & keterangan",
+    "Harf jar": "Kata depan", "Harf taukid": "Kata keterangan", "Harf tahqiq": "Kata keterangan",
+    "Harf nafy": "Kata keterangan", "Harf jazm": "Kata keterangan", "Harf istifham": "Kata tanya, syarat & seru",
+    "Adat syarth": "Kata tanya, syarat & seru",
+    "Harf nida'": "Kata tanya, syarat & seru", "Harf istiqbal": "Kata keterangan",
     "Isim dhamir": "Kata ganti orang", "Isim isyarah": "Kata tunjuk", "Isim maushul": "Kata penghubung",
-    "Isim istifham": "Kata tanya", "Isim 'alam": "Nama", "Shighah mubalaghah": "Sifat-sifat Allah",
+    "Isim istifham": "Kata tanya, syarat & seru", "Isim 'alam": "Nama", "Shighah mubalaghah": "Sifat-sifat Allah",
     "Zharaf zaman": "Keterangan waktu", "Zharaf makan": "Keterangan tempat",
     "Isim tafdhil": "Kata sifat", "Fi'il naqish": "Kata kerja bantu",
 }
 BY_BW = {  # pengecualian per kata
-    "<in~": "Kata penegas", ">an~": "Kata sambung", "laEal~": "Kata sambung",
+    "<in~": "Kata keterangan", "baSiyr": "Sifat-sifat Allah", ">an~": "Kata sambung", "laEal~": "Kata sambung",
     "Sa`liH": "Kata sifat", "m~ubiyn": "Kata sifat", "EaZiym": "Kata sifat", "xayor": "Kata sifat", "A^xir": "Kata sifat",
     "kul~": "Kata jumlah", "baEoD": "Kata jumlah", "gayor": "Kata jumlah", ">ay~uhaA": "Kata seru",
     "rab~": "Kata benda: orang & makhluk", "qawom": "Kata benda: orang & makhluk", "rasuwl": "Kata benda: orang & makhluk",
@@ -65,6 +65,47 @@ BY_BW = {  # pengecualian per kata
     "SaY`Hib": "Kata benda: orang & makhluk", "malak": "Kata benda: orang & makhluk", "waliY~": "Kata benda: orang & makhluk",
     ">ax": "Kata benda: orang & makhluk", "*uw": "Kata benda: orang & makhluk", "nafos": "Kata benda: orang & makhluk",
 }
+
+
+NOTE = {
+    "Kata kerja": "Ditulis madhi – mudhari'. Satu kata kerja mewakili **semua bentuknya**: madhi (lampau), "
+                  "mudhari' (sekarang/akan datang), dan amr (perintah), termasuk perubahan untuk dia/kamu/mereka. "
+                  "Jumlah kemunculan (×) sudah menghitung semuanya. Contoh: قَالَ mencakup قَالُوا، يَقُولُ، "
+                  "نَقُولُ، قُلْ، قُولُوا.",
+    "Kata kerja bantu": "Sama seperti kata kerja: كَانَ mencakup يَكُونُ، كَانُوا، كُنْ, dan seterusnya.",
+    "Kata ganti orang": "Setiap kata ganti punya dua bentuk dengan arti sama: **terpisah** (berdiri sendiri) dan "
+                        "**bersambung** (menempel di akhir kata, ditandai ـ). هُمْ ditulis sama dalam kedua bentuk, "
+                        "jadi dihitung satu kata.",
+}
+# kata ganti orang: (orang, kunci terpisah, kunci bersambung, contoh bersambung)
+PRON_PAIRS = [("dia (laki-laki)", "PRON:hw", "PRON:h", "لَهُ (baginya)"),
+              ("dia (perempuan)", "PRON:hy", "PRON:hA", "بِهَا (dengannya)"),
+              ("mereka", "PRON:hm", "PRON:hm", "لَهُمْ (bagi mereka)"),
+              ("kamu", "PRON:>nt", "PRON:k", "رَبُّكَ (Tuhanmu)"),
+              ("kalian", "PRON:>ntm", "PRON:km", "لَكُمْ (bagi kalian)"),
+              ("aku", "PRON:>nA", "PRON:y", "لِي (bagiku)"),
+              ("kami", "PRON:nHn", "PRON:nA", "رَبَّنَا (Tuhan kami)")]
+
+
+def num(n):
+    return f"{n:,}".replace(",", ".")
+
+
+def pron_table(ys):
+    have = {x["bw"]: x for x in ys}
+    rows = ["| Orang | Terpisah | Bersambung | Contoh | × |", "|---|---|---|---|---|"]
+    used = set()
+    for orang, a, b, contoh in PRON_PAIRS:
+        if a not in have and b not in have:
+            continue
+        ta = have[a]["ar"] if a in have else "—"
+        tb = "ـ" + have[b]["ar"] if b in have else "—"
+        n = num(have[a]["n"]) if a == b else " · ".join(num(have[k]["n"]) for k in (a, b) if k in have)
+        rows.append(f"| {orang} | {ta} | {tb} | {contoh} | {n} |")
+        used |= {a, b}
+    rest = [x for x in ys if x["bw"] not in used]
+    assert not rest, [x["bw"] for x in rest]
+    return rows
 
 
 def group_of(x):
@@ -98,8 +139,13 @@ for k, name, ar in CLASS:
         ys = g.pop(j, [])
         if not ys:
             continue
-        out += [f"### {j} ({len(ys)} kata · {pct(ys)}%)", "", f"_{contoh}_", "",
-                "| No. | Kata | Arti | × |", "|---|---|---|---|"]
+        out += [f"### {j} ({len(ys)} kata · {pct(ys)}%)", "", f"_{contoh}_", ""]
+        if j in NOTE:
+            out += [NOTE[j], ""]
+        if j == "Kata ganti orang":
+            out += pron_table(ys) + [""]
+            continue
+        out += ["| No. | Kata | Arti | × |", "|---|---|---|---|"]
         for x in ys:
             w = x["ar"] + ("ـ" if x.get("menempel") else "")
             if x.get("mudhari"):

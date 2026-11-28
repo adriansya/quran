@@ -1,11 +1,11 @@
 # Materi Jenjang 70%
 
-**152 kata dasar = 70,1% dari seluruh kata dalam Al-Qur'an**
+**159 kata dasar = 70,5% dari seluruh kata dalam Al-Qur'an**
 
 | Kelas | Jumlah kata | Cakupan |
 |---|---|---|
 | Harf حَرْفٌ | 32 | 36,7% |
-| Isim اسْمٌ | 90 | 24,7% |
+| Isim اسْمٌ | 97 | 25,1% |
 | Fi'il فِعْلٌ | 30 | 8,7% |
 
 Keterangan kolom:
@@ -18,7 +18,7 @@ Keterangan kolom:
 
 ### Kata sambung (10 kata · 15,6%)
 
-_dan, lalu, atau, bahwa, kecuali, agar_
+_dan, lalu, atau, bahkan, bahwa, kecuali, agar_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
@@ -49,73 +49,50 @@ _dari, di, ke, untuk, dengan_
 | 47 | كَـ | seperti; bagaikan | 295 |
 | 92 | حَتَّى | sampai; hingga; sehingga | 142 |
 
-### Kata penegas (3 kata · 3,2%)
+### Kata keterangan (7 kata · 5,5%)
 
-_sesungguhnya, sungguh_
-
-| No. | Kata | Arti | × |
-|---|---|---|---|
-| 10 | إِنَّ | sesungguhnya | 1.682 |
-| 15 | لَـ | sungguh; benar-benar | 1.001 |
-| 31 | قَدْ | sungguh; telah; kadang-kadang | 406 |
-
-### Kata ingkar (3 kata · 2,2%)
-
-_tidak, belum, tidak akan_
+_sungguh, telah, tidak, belum, akan_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
 | 9 | لَا | tidak; jangan; tidak ada | 1.691 |
+| 10 | إِنَّ | sesungguhnya | 1.682 |
+| 15 | لَـ | sungguh; benar-benar | 1.001 |
+| 31 | قَدْ | sungguh; telah; kadang-kadang | 406 |
 | 40 | لَمْ | tidak; belum | 353 |
+| 111 | سَـ | akan | 119 |
 | 124 | لَنْ | tidak akan | 104 |
 
-### Kata tanya (3 kata · 0,7%)
+### Kata tanya, syarat & seru (6 kata · 2,0%)
 
-_apakah, bagaimana_
-
-| No. | Kata | Arti | × |
-|---|---|---|---|
-| 25 | أَـ | apakah | 513 |
-| 129 | هَلْ | apakah | 93 |
-| 149 | كَيْفَ | bagaimana | 83 |
-
-### Kata syarat (2 kata · 0,9%)
-
-_jika, seandainya_
+_apakah, bagaimana, jika, seandainya, wahai_
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
 | 20 | إِنْ | jika; tidak (lain) | 698 |
-| 67 | لَوْ | seandainya; sekiranya; walaupun | 200 |
-
-### Kata seru & keterangan (2 kata · 0,5%)
-
-_wahai, akan_
-
-| No. | Kata | Arti | × |
-|---|---|---|---|
+| 25 | أَـ | apakah | 513 |
 | 38 | يَاـ | wahai | 361 |
-| 111 | سَـ | akan | 119 |
+| 67 | لَوْ | seandainya; sekiranya; walaupun | 200 |
+| 129 | هَلْ | apakah | 93 |
+| 149 | كَيْفَ | bagaimana | 83 |
 
-## Isim اسْمٌ (90 kata · 24,7%)
+## Isim اسْمٌ (97 kata · 25,1%)
 
-### Kata ganti orang (11 kata · 3,2%)
+### Kata ganti orang (13 kata · 3,3%)
 
 _dia, kamu, kami, mereka_
 
-| No. | Kata | Arti | × |
-|---|---|---|---|
-| 17 | هُمْ | mereka, -nya (mereka) | 906 |
-| 22 | هُ | dia (laki-laki), -nya | 637 |
-| 26 | هُوَ | dia (laki-laki) | 481 |
-| 33 | كُمْ | kalian, -mu (jamak) | 395 |
-| 97 | أَنْتُمْ | kalian | 135 |
-| 107 | هَا | dia (perempuan), -nya | 125 |
-| 136 | نَا | kami, -kami | 88 |
-| 141 | نَحْنُ | kami | 86 |
-| 154 | كَ | kamu, -mu | 82 |
-| 155 | أَنْتَ | kamu, engkau | 81 |
-| 159 | ي | aku, -ku | 78 |
+Setiap kata ganti punya dua bentuk dengan arti sama: **terpisah** (berdiri sendiri) dan **bersambung** (menempel di akhir kata, ditandai ـ). هُمْ ditulis sama dalam kedua bentuk, jadi dihitung satu kata.
+
+| Orang | Terpisah | Bersambung | Contoh | × |
+|---|---|---|---|---|
+| dia (laki-laki) | هُوَ | ـهُ | لَهُ (baginya) | 481 · 637 |
+| dia (perempuan) | هِيَ | ـهَا | بِهَا (dengannya) | 63 · 125 |
+| mereka | هُمْ | ـهُمْ | لَهُمْ (bagi mereka) | 906 |
+| kamu | أَنْتَ | ـكَ | رَبُّكَ (Tuhanmu) | 81 · 82 |
+| kalian | أَنْتُمْ | ـكُمْ | لَكُمْ (bagi kalian) | 135 · 395 |
+| aku | أَنَا | ـي | لِي (bagiku) | 68 · 78 |
+| kami | نَحْنُ | ـنَا | رَبَّنَا (Tuhan kami) | 86 · 88 |
 
 ### Kata tunjuk (3 kata · 0,9%)
 
@@ -148,7 +125,7 @@ _Allah, nama nabi, dll._
 | 95 | مُوسَى | Musa | 136 |
 | 135 | شَيْطَانٌ | setan | 88 |
 
-### Sifat-sifat Allah (5 kata · 0,6%)
+### Sifat-sifat Allah (10 kata · 0,8%)
 
 _Maha …_
 
@@ -159,6 +136,11 @@ _Maha …_
 | 125 | عَزِيزٌ | Maha Perkasa; mulia; berat (terasa berat) | 101 |
 | 127 | حَكِيمٌ | Maha Bijaksana; bijaksana | 97 |
 | 132 | غَفُورٌ | Maha Pengampun | 91 |
+| 225 | رَحْمٰنُ | Yang Maha Pengasih | 57 |
+| 227 | شَهِيدٌ | saksi; Maha Menyaksikan; syahid | 56 |
+| 245 | بَصِيرٌ | Maha Melihat; yang melihat | 51 |
+| 267 | سَمِيعٌ | Maha Mendengar | 47 |
+| 276 | قَدِيرٌ | Mahakuasa | 45 |
 
 ### Keterangan waktu (5 kata · 1,3%)
 
@@ -279,6 +261,8 @@ _bumi, hari, kitab, rahmat_
 
 _berkata, mengetahui, menjadikan_
 
+Ditulis madhi – mudhari'. Satu kata kerja mewakili **semua bentuknya**: madhi (lampau), mudhari' (sekarang/akan datang), dan amr (perintah), termasuk perubahan untuk dia/kamu/mereka. Jumlah kemunculan (×) sudah menghitung semuanya. Contoh: قَالَ mencakup قَالُوا، يَقُولُ، نَقُولُ، قُلْ، قُولُوا.
+
 | No. | Kata | Arti | × |
 |---|---|---|---|
 | 11 | قَالَ – يَقُولُ | berkata; berfirman | 1.618 |
@@ -313,6 +297,8 @@ _berkata, mengetahui, menjadikan_
 ### Kata kerja bantu (2 kata · 1,5%)
 
 _adalah, bukan_
+
+Sama seperti kata kerja: كَانَ mencakup يَكُونُ، كَانُوا، كُنْ, dan seterusnya.
 
 | No. | Kata | Arti | × |
 |---|---|---|---|
