@@ -108,7 +108,7 @@ BROKEN = {
     "rawa`siY": "raAsiyap", ">asobaAT": "siboT",
 }
 # Varian tulisan kata yang sama (semua jenis kata).
-ALIAS = {"laday": "ladaY", "<iyn": "<in"}  # أَفَإِي۟ن (3:144) = إِنْ; ya' tambahan rasm tak dibaca
+ALIAS = {"laday": "ladaY", "<iyn": "<in", "*aA": "*uw"}  # أَفَإِي۟ن (3:144) = إِنْ; ya' tambahan rasm tak dibaca
 
 # Isim jamak / jamak tanpa mufrad dari lafaznya: tetap berdiri sendiri, diberi keterangan.
 PLURAL_ONLY = {

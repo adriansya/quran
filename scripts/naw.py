@@ -243,6 +243,9 @@ MUNSARIF_EXTRA = {"أَرْبَع", "مَالِك"}  # أَرْبَعٌ: wazan �
 FALAN = {"كَسْلَان", "رَحْمٰن", "سَكْرَان", "غَضْبَان", "حَيْرَان"}
 # Tulisan baku harf & isim mabni dengan harakat bina'-nya (Corpus tidak menulis harakat akhir).
 MABNI_FORM = {
+    # tulisan kamus yang tidak bisa diturunkan dari kaidah umum
+    ">ay~uhaA": "أَيُّهَا", ">ay~atuhaA": "أَيَّتُهَا", "*uw": "ذُو", ">uwliY": "أُولُو", "kilaA": "كِلَا", "kilotaA": "كِلْتَا",
+    ">aqoSaA": "أَقْصَى", "S~afaA": "الصَّفَا", "kita`biY": "كِتَابِيَهْ", "raA^d~iY": "رَادٌّ",
     "min": "مِنْ", "Ean": "عَنْ", "qad": "قَدْ", "lam": "لَمْ", "lan": "لَنْ", "bal": "بَلْ", "hal": "هَلْ",
     ">am": "أَمْ", "<in": "إِنْ", ">an": "أَنْ", "man": "مَنْ", "kam": "كَمْ", "naEam": "نَعَمْ",
     "la`kin": "لٰكِنْ", "<il~am": "إِلَّمْ", "<in~": "إِنَّ", ">an~": "أَنَّ", "vum~": "ثُمَّ",
@@ -269,6 +272,8 @@ def marfu_ar(ar, munsarif, plural=False):
         return (ar[:-2] if ar[-2] == FATHA else ar[:-1]) + TANWIN_F + "ى"
     if ar.endswith("\u0650ي") and smj(ar):
         return ar[:-2] + TANWIN_K  # manqush ghairu munsharif: tanwin 'iwadh (نَوَاصٍ، ثَمَانٍ)
+    if ar.endswith("\u0650ي") and munsarif and not plural:
+        return ar[:-2] + TANWIN_K  # manqush nakirah: ya' dibuang, tanwin kasrah (وَادٍ، دَاعٍ، ثَانٍ)
     if ar.startswith("ال"):
         return ar + DAMMA  # ma'rifah dengan al-: اللّٰهُ، الْيَسَعُ
     if ar.endswith(FATHA + "ا") and len(ar) > 3:

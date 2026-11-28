@@ -258,6 +258,31 @@ def corpus_stats(order, occ, mushaf, chapters, surah_out):
 
 
 VOWEL_I = {}
+
+LEAD_CONJ = re.compile(r"^(?:dan|maka|lalu|kemudian|sungguh|dan sungguh|maka sungguh|dan sesungguhnya)\s+(?=\S)", re.I)
+LEAD_ART = re.compile(r"^(?:suatu|seorang|sebuah|para|beberapa)\s+(?=\S)")
+LEAD_PRON = re.compile(r"^(?:ia|dia|Dia|mereka|kamu|engkau|Engkau|kami|Kami|aku|kalian|telah|sungguh|benar-benar|akan|yang)\s+(?=\S)")
+
+
+def clean_mean(m, verb):
+    """Rapikan arti per kata menjadi arti kamus: buang 'dan/maka' (dari وَ/فَ) dan, untuk fi'il, kata ganti pelaku."""
+    m = (m or "").strip()
+    prev = None
+    while prev != m:
+        prev = m
+        m = LEAD_CONJ.sub("", m)
+        if verb:
+            m = LEAD_PRON.sub("", m)
+        else:
+            m = LEAD_ART.sub("", m)
+    return m
+
+
+MEAN_FIX = {}  # diisi dari scripts/mean_fix.py (koreksi manual arti kamus)
+try:
+    from mean_fix import MEAN_FIX  # noqa: E402,F401
+except ImportError:
+    pass
 PFX_FORMS = collections.defaultdict(collections.Counter)
 # Isim maushul & isyarah mabni: tiap bentuk adalah kata tersendiri (Corpus menyatukannya dalam satu lemma).
 SPLIT = {
@@ -373,7 +398,7 @@ def main():
                     "mean": collections.Counter(), "core": collections.Counter(),
                     "forms": collections.Counter(), "stems": collections.Counter(), "tr": {},
                     "orig": collections.Counter(), "plural": collections.Counter(), "fem": collections.Counter(),
-                    "impf": collections.Counter(), "pcpl": 0, "nums": collections.Counter(),
+                    "impf": collections.Counter(), "pcpl": 0, "nums": collections.Counter(), "dict": collections.Counter(), "plain": collections.Counter(),
                     "feat": collections.Counter(), "pl_tan": collections.Counter(), "pl_gf": collections.Counter(),
                 })
                 L["orig"][a["orig"]] += 1
@@ -413,6 +438,17 @@ def main():
                 L["mean"][meaning] += 1
                 if a["bare"]:
                     L["core"][meaning] += 1
+                segs_ = corpus[loc]
+                sfx = any(sg[2][0] == "SUFFIX" for sg in segs_)
+                pfx = [sg[2][1] for sg in segs_ if sg[2][0] == "PREFIX"]
+                light = all(t.startswith(("w:", "f:")) or t == "Al+" for t in pfx)  # awalan yang artinya mudah dibuang
+                if not sfx and not (a["pos"] == "V" and ("IMPV" in ft or "PASS" in ft)):
+                    L["plain"][clean_mean(meaning, a["pos"] == "V")] += 1  # tanpa dhamir menempel, bukan perintah/pasif
+                if not sfx and light:
+                    if a["pos"] == "V" and "PERF" in ft and "3MS" in ft and "PASS" not in ft:
+                        L["dict"][clean_mean(meaning, True)] += 1  # madhi orang ketiga tunggal = bentuk kamus
+                    elif a["pos"] != "V" and num == "S":
+                        L["dict"][clean_mean(meaning, False)] += 1
                 L["stems"][a["stem"]] += 1
                 L["forms"][w["text_uthmani"]] += 1
                 L["tr"].setdefault(w["text_uthmani"], w["transliteration"]["text"])
@@ -457,13 +493,18 @@ def main():
         display = re.sub(r"\d+$", "", display)
         means = []
         n_all = sum(L["mean"].values())
-        cands = L["core"].most_common(3) + L["mean"].most_common(8)
+        isv = pos == "V"
+        d_all = sum(L["dict"].values())
+        # arti dari bentuk kamus (madhi 3MS / isim mufrad tanpa dhamir) bila cukup sering; sisanya cara lama
+        dict_c = [(m, c) for m, c in L["dict"].most_common(3) if m and (c >= 2 or d_all <= 2)]
+        rest = L["plain"].most_common(8) or [(clean_mean(m, isv), c) for m, c in L["core"].most_common(3) + L["mean"].most_common(8)]
+        cands = dict_c + rest
         for i, (m, c) in enumerate(cands):
-            if i and c < max(2, 0.03 * n_all):  # buang arti jarang/tidak selaras
+            if i and i >= len(dict_c) and c < max(2, 0.03 * n_all):  # buang arti jarang/tidak selaras
                 continue
             if m and m not in means:
                 means.append(m)
-        means = means[:4]
+        means = MEAN_FIX.get(k) or means[:4]
         kind, _, key = k.partition(":") if ":" in k and k.split(":")[0] in POS_ID or k.startswith("INL:") else ("", "", k)
         if kind == "PRON" and key in PRONOUNS:
             ar, means = PRONOUNS[key][0], PRONOUNS[key][1]
