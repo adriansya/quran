@@ -21,6 +21,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from arabic_std import PRONOUNS, consonant_key, std  # noqa: E402
 import canon as CANON  # noqa: E402
 import naw as NAW  # noqa: E402
+import review_fix as REVIEW  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
@@ -149,6 +150,7 @@ def plural_forms(L, lemma_ar):
             s, kind = re.sub(r"(uw|iy|iY)$", "uwn", s), "jamak mudzakkar salim"
         elif re.search(r"(aAt|a`t)$", s):
             s, kind = re.sub(r"a`t$", "aAt", s), "jamak muannats salim"
+        s = re.sub(r"uwnaA$", "uwn", s)  # alif ithlaq (الظُّنُونَا)
         ar = std(s)
         if not ar or skel(ar) == skel(lemma_ar):
             continue
@@ -178,7 +180,7 @@ def plural_forms(L, lemma_ar):
             mun = True
         else:
             mun = not NAW.mamnu_by_rule(x["ar"], x["bw"], L["root"], "isim", "N")
-        item = {"ar": NAW.marfu_ar(x["ar"], mun, plural=True), "jenis": x["jenis"]}
+        item = {"ar": NAW.marfu_ar(x["ar"], mun, plural="salim" in x["jenis"]), "jenis": x["jenis"]}
         if x.get("wazan"):
             item["wazan"] = x["wazan"]
         if not mun:
@@ -225,16 +227,18 @@ def sharaf_info(k, L, pos, ar, notes):
             w = "فَعْلَلَ"  # fi'il ruba'i mujarrad (وَسْوَسَ، زَلْزَلَ)
         if w:
             info["wazan"] = w
-        if k in MUDHARI_FIX and not L["impf"]:
+        if k in REVIEW.MUDHARI:
+            info["mudhari"] = REVIEW.MUDHARI[k]
+        elif k in MUDHARI_FIX and not L["impf"]:
             info["mudhari"] = MUDHARI_FIX[k]
         if L["impf"]:
             # utamakan bentuk marfu' (يَدْعُو، يَأْتِي، يَرَى), bukan majzum (يَدْعُ، يَأْتِ)
             ranked = sorted(L["impf"].items(), key=lambda x: (
                 0 if re.search(r"(iy|uw|aY`?|aA)$", x[0]) else 1 if x[0].endswith("u") else 2, -x[1]))
             cands = [x[0] for x in ranked]
-            info["mudhari"] = MUDHARI_FIX.get(k) or marfu_mudhari(std(re.sub(r"^(.)~", r"\1", cands[0])), L["root"] or "")
+            info["mudhari"] = REVIEW.MUDHARI.get(k) or MUDHARI_FIX.get(k) or marfu_mudhari(std(re.sub(r"^(.)~", r"\1", cands[0])), L["root"] or "")
     elif pos in ("N", "ADJ"):
-        pl = plural_forms(L, ar)
+        pl = REVIEW.JAMAK[k] if k in REVIEW.JAMAK else plural_forms(L, ar)
         if pl:
             info["jamak"] = pl
         if L["fem"] and not ar.endswith("ة"):
@@ -367,6 +371,7 @@ SPLIT = {
     "*a`lik": [(r"^til", "tiloka"), (r"", "*a`lik")],
     # Corpus menggabungkan عِظَام (tulang, jamak عَظْم) ke عَظِيم (agung)
     "EaZiym": [(r"^EiZa", "EaZom"), (r"", "EaZiym")],
+    "duEaA^'": [(r"^>adoEiyaA", "daEiy~"), (r"", "duEaA^'")],  # أَدْعِيَاء (anak angkat) bukan jamak دُعَاء
     "ha`*aA": [(r"&ulaA", "ha`&ulaA'i"), (r"\*ihi", "ha`*ihi"), (r"", "ha`*aA")],
 }
 BENTUK = {
@@ -587,7 +592,7 @@ def main():
             if m and m.lower() not in seen_l:
                 means.append(m)
                 seen_l.add(m.lower())
-        means = MEAN_FIX.get(k) or means[:4]
+        means = REVIEW.MEAN.get(k) or MEAN_FIX.get(k) or means[:4]
         kind, _, key = k.partition(":") if ":" in k and k.split(":")[0] in POS_ID or k.startswith("INL:") else ("", "", k)
         if kind == "PRON" and key in PRONOUNS:
             ar, means = PRONOUNS[key][0], PRONOUNS[key][1]
@@ -599,7 +604,9 @@ def main():
                           VOWEL_I.get(L["root"]))
         mamnu = False
         zh = NAW.ZHARAF.get(k)
-        if k in NAW.MABNI_FORM:
+        if k in REVIEW.AR:
+            ar_plain, ar = ar, REVIEW.AR[k]
+        elif k in NAW.MABNI_FORM:
             ar_plain, ar = ar, NAW.MABNI_FORM[k]  # harf/isim mabni: harakat bina' ditulis (مِنْ، إِنَّ، كَيْفَ)
         elif zh:
             ar_plain, ar = ar, zh[1]  # zharaf ditulis sesuai pemakaiannya (قَبْلَ، فَوْقَ، حَيْثُ)

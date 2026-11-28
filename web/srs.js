@@ -59,7 +59,7 @@ export function preview(c, now = Date.now()) {
 // ---------- state ----------
 const KEY = "kq.v2";
 // Versi nomor kata. v2: kata ganti yang hanya beda tanda mad digabung, nomor bergeser.
-export const DATA_VERSION = 8; // v8: عَظْمٌ dipisah dari عَظِيمٌ, تَعَالَ; // v7: huruf menempel (وَ، فَ، بِ، لِ …) jadi kartu, nomor bergeser; // v6: إِين (3:144) disatukan ke إِنْ; // v5: الَّذِي/الَّذِينَ/الَّتِي, هٰذَا/هٰذِهِ/هٰؤُلَاءِ, ذٰلِكَ/تِلْكَ dipisah; // v3: fi'il -> madhi, isim -> mufrad; v4: jamak taksir sisa disatukan
+export const DATA_VERSION = 8; // v8: review manual seluruh kata; عَظْمٌ, دَعِيٌّ dipisah, تَعَالَ; // v7: huruf menempel (وَ، فَ، بِ، لِ …) jadi kartu, nomor bergeser; // v6: إِين (3:144) disatukan ke إِنْ; // v5: الَّذِي/الَّذِينَ/الَّتِي, هٰذَا/هٰذِهِ/هٰؤُلَاءِ, ذٰلِكَ/تِلْكَ dipisah; // v3: fi'il -> madhi, isim -> mufrad; v4: jamak taksir sisa disatukan
 const blank = () => ({ cards: {}, days: {}, extra: {}, w: {}, scope: "all", npd: 10, src: "freq", sk: { d: 0, n: 0 }, badges: [], t: 0, dv: DATA_VERSION });
 export let st = blank();
 export let canStore = true;

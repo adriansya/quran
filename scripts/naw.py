@@ -157,9 +157,14 @@ for _k in ("Eilom", "raHomap", "hudFY", "xaloq", "kufor", "Zulom", "Eamal", "Huk
     JENIS_FIX.setdefault(_k, "masdar")
 
 
+import review_fix as REVIEW  # noqa: E402
+
+
 def classify(k, pos, root, feats, means, form, verb_vowel=None):
     """k: lemma kanonik (Buckwalter), pos: POS Corpus, feats: Counter fitur, means: daftar arti."""
     base = re.sub(r"\d+$", "", k.split(":", 1)[-1])
+    if k in REVIEW.JENIS:
+        return REVIEW.JENIS[k]
     if pos == "V":
         if base in JAMID:
             return "f_jamid"
