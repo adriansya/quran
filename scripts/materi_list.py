@@ -1,7 +1,7 @@
 """Daftar kata materi per jenjang, dikelompokkan per kelas & jenis kata (bahasa Indonesia).
 
     python3 materi_list.py ISIM FIIL HARF [JUDUL] [+bw,+bw ...]
-    contoh: python3 materi_list.py 90 30 30 "Jenjang 70%" +hal,+kayof  ->  materi/kata-90-30-30.md
+    contoh: python3 materi_list.py 91 30 30 "Jenjang 70%" +hal,+kayof,...  ->  materi/kata-90-30-30.md
     +bw = kata tambahan yang wajib masuk (kunci Buckwalter).
 """
 import collections, json, os, sys

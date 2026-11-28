@@ -1,11 +1,11 @@
 # Materi Jenjang 70%
 
-**159 kata dasar = 70,5% dari seluruh kata dalam Al-Qur'an**
+**160 kata dasar = 70,6% dari seluruh kata dalam Al-Qur'an**
 
 | Kelas | Jumlah kata | Cakupan |
 |---|---|---|
 | Harf حَرْفٌ | 32 | 36,7% |
-| Isim اسْمٌ | 97 | 25,1% |
+| Isim اسْمٌ | 98 | 25,2% |
 | Fi'il فِعْلٌ | 30 | 8,7% |
 
 Keterangan kolom:
@@ -76,7 +76,7 @@ _apakah, bagaimana, jika, seandainya, wahai_
 | 129 | هَلْ | apakah | 93 |
 | 149 | كَيْفَ | bagaimana | 83 |
 
-## Isim اسْمٌ (97 kata · 25,1%)
+## Isim اسْمٌ (98 kata · 25,2%)
 
 ### Kata ganti orang (13 kata · 3,3%)
 
@@ -115,7 +115,7 @@ _yang, siapa, apa_
 | 18 | مَنْ | siapa; barang siapa; orang yang | 824 |
 | 46 | الَّذِي | yang; orang yang | 304 |
 
-### Nama (3 kata · 3,0%)
+### Nama (4 kata · 3,1%)
 
 _Allah, nama nabi, dll._
 
@@ -124,6 +124,7 @@ _Allah, nama nabi, dll._
 | 5 | اللّٰهُ | Allah | 2.699 |
 | 95 | مُوسَى | Musa | 136 |
 | 135 | شَيْطَانٌ | setan | 88 |
+| 163 | جَهَنَّمُ | neraka Jahanam | 77 |
 
 ### Sifat-sifat Allah (10 kata · 0,8%)
 
